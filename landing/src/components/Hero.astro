@@ -1,0 +1,61 @@
+---
+interface Props {
+  appStoreUrl: string;
+  playStoreUrl: string;
+}
+const { appStoreUrl, playStoreUrl } = Astro.props;
+---
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="mascot-lottie" id="mascot-lottie"></div>
+      <div class="badge beta-badge">
+        <span class="badge-dot"></span>
+        Acceso Beta Exclusivo
+      </div>
+      <h1>Practica Medicina jugando</h1>
+      <p class="hero-sub">
+        Disponible ahora en fase Beta. Quizzes de <strong>Anatomía</strong> y <strong>Farmacología</strong> — MUY PRONTO MÁS MATERIAS.
+      </p>
+      <div class="store-buttons">
+        <a href={appStoreUrl} class="store-btn white soon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          <div>
+            <small>Próximamente en</small>
+            <strong>App Store</strong>
+          </div>
+        </a>
+        <a href={playStoreUrl} class="store-btn blue soon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5.5 4.5l13 7.5-13 7.5V4.5z"/></svg>
+          <div>
+            <small>Próximamente en</small>
+            <strong>Google Play</strong>
+          </div>
+        </a>
+      </div>
+      <a href="#descargar" class="btn-beta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Probar la Beta ahora
+      </a>
+    </div>
+    <div class="hero-right">
+      <div class="phone-mockup">
+        <div class="phone-notch"></div>
+        <img src="/screenshots/init.png" alt="TopoQuizz pantalla inicial" class="phone-img" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import lottie from 'lottie-web';
+
+  lottie.loadAnimation({
+    container: document.getElementById('mascot-lottie') as HTMLElement,
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: '/HomeMole.json',
+  });
+</script>

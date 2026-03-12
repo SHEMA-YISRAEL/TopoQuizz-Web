@@ -1,0 +1,90 @@
+---
+interface Props {
+  appStoreUrl: string;
+  playStoreUrl: string;
+}
+const { appStoreUrl, playStoreUrl } = Astro.props;
+---
+
+<section class="download" id="descargar">
+  <div class="download-inner">
+    <div class="dl-left">
+      <span class="sec-badge green">Beta Exclusiva · Gratis</span>
+      <h2>¡Sé parte de la Beta de <span class="brand-topo">Topo</span><span class="brand-quizz">Quizz</span>!</h2>
+      <p>Únete ahora y prueba la app antes que nadie. Lanzamiento oficial en tiendas próximamente.</p>
+      <div class="store-buttons">
+        <a href={appStoreUrl} class="store-btn white soon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          <div><small>Próximamente en</small><strong>App Store</strong></div>
+        </a>
+        <a href={playStoreUrl} class="store-btn blue soon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5.5 4.5l13 7.5-13 7.5V4.5z"/></svg>
+          <div><small>Próximamente en</small><strong>Google Play</strong></div>
+        </a>
+      </div>
+    </div>
+    <div class="qr-cards">
+      <div class="qr-card soon-card">
+        <div class="qr-box qr-soon">
+          <svg width="90" height="90" viewBox="0 0 100 100" fill="none">
+            <rect x="8" y="8" width="32" height="32" stroke="#283143" stroke-width="5" fill="none" rx="3"/>
+            <rect x="17" y="17" width="14" height="14" fill="#283143" rx="1"/>
+            <rect x="60" y="8" width="32" height="32" stroke="#283143" stroke-width="5" fill="none" rx="3"/>
+            <rect x="69" y="17" width="14" height="14" fill="#283143" rx="1"/>
+            <rect x="8" y="60" width="32" height="32" stroke="#283143" stroke-width="5" fill="none" rx="3"/>
+            <rect x="17" y="69" width="14" height="14" fill="#283143" rx="1"/>
+            <rect x="60" y="60" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="74" y="60" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="60" y="74" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="74" y="74" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="46" y="8" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="46" y="46" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="8" y="46" width="10" height="10" fill="#283143" rx="1"/>
+          </svg>
+          <span class="qr-soon-text">Próximamente</span>
+        </div>
+        <div class="qr-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          App Store
+        </div>
+        <small>Siguenos para más info</small>
+      </div>
+      <div class="qr-card soon-card">
+        <div class="qr-box qr-soon">
+          <svg width="90" height="90" viewBox="0 0 100 100" fill="none">
+            <rect x="8" y="8" width="32" height="32" stroke="#283143" stroke-width="5" fill="none" rx="3"/>
+            <rect x="17" y="17" width="14" height="14" fill="#283143" rx="1"/>
+            <rect x="60" y="8" width="32" height="32" stroke="#283143" stroke-width="5" fill="none" rx="3"/>
+            <rect x="69" y="17" width="14" height="14" fill="#283143" rx="1"/>
+            <rect x="8" y="60" width="32" height="32" stroke="#283143" stroke-width="5" fill="none" rx="3"/>
+            <rect x="17" y="69" width="14" height="14" fill="#283143" rx="1"/>
+            <rect x="60" y="74" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="74" y="60" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="46" y="22" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="46" y="60" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="22" y="46" width="10" height="10" fill="#283143" rx="1"/>
+            <rect x="60" y="46" width="20" height="10" fill="#283143" rx="1"/>
+          </svg>
+          <span class="qr-soon-text">Próximamente</span>
+        </div>
+        <div class="qr-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5.5 4.5l13 7.5-13 7.5V4.5z"/></svg>
+          Google Play
+        </div>
+        <small>Siguenos para más info</small>
+      </div>
+      <div class="qr-card beta-card">
+        <div class="qr-box">
+          <img src="/qrs/TopoQuizzBeta.svg" alt="QrBeta">
+        </div>
+        <div class="qr-label beta-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <a href="https://drive.google.com/drive/folders/1PSRJvMRLb8qFjWZ_8o2h0DOGk7B4yQJB" target="_blank" rel="noopener noreferrer">
+            Probar Beta
+          </a>
+        </div>
+        <small>Escanea para acceder</small>
+      </div>
+    </div>
+  </div>
+</section>

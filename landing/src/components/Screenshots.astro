@@ -1,0 +1,41 @@
+---
+const screenshots = [
+  { src: '/screenshots/init.png', alt: 'Pantalla inicial' },
+  { src: '/screenshots/courses.png', alt: 'materias' },
+  { src: '/screenshots/quizz.png', alt: 'Quiz' },
+  { src: '/screenshots/completedQuizz.png', alt: 'Quiz completado' },
+  { src: '/screenshots/init2.png', alt: 'Inicio alternativo' },
+  { src: '/screenshots/lesson.png', alt: 'Lección' },
+  { src: '/screenshots/respuestaCorrecta.png', alt: 'Respuesta correcta' },
+  { src: '/screenshots/respuestaIncorrecta.png', alt: 'Respuesta incorrecta' },
+  { src: '/screenshots/explicacionProgreso.png', alt: 'Progreso' },
+];
+---
+
+<section class="screenshots" id="screenshots">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-badge dark">La App en Acción · Beta</span>
+      <h2 class="white">Diseñada para la eficiencia</h2>
+      <p class="muted">Interfaz limpia e intuitiva. Enfócate en aprender, no en buscar cómo usar la app.</p>
+    </div>
+    <div class="carousel">
+      <div class="carousel-track">
+        <div class="track-set">
+          {screenshots.map(s => (
+            <div class="phone-frame">
+              <img src={s.src} alt={s.alt} class="frame-img" />
+            </div>
+          ))}
+        </div>
+        <div class="track-set" aria-hidden="true">
+          {screenshots.map(s => (
+            <div class="phone-frame">
+              <img src={s.src} alt="" class="frame-img" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

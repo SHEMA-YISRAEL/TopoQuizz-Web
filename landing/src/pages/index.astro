@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Stats from '../components/Stats.astro';
+import Features from '../components/Features.astro';
+import Screenshots from '../components/Screenshots.astro';
+import QuizDemo from '../components/QuizDemo.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import Download from '../components/Download.astro';
+import Footer from '../components/Footer.astro';
+
+const appStoreUrl = '#';
+const playStoreUrl = '#';
+---
+
+<Layout>
+  <Header />
+  <Hero appStoreUrl={appStoreUrl} playStoreUrl={playStoreUrl} />
+  <Stats />
+  <Features />
+  <Screenshots />
+  <QuizDemo />
+  <HowItWorks />
+  <Download appStoreUrl={appStoreUrl} playStoreUrl={playStoreUrl} />
+  <Footer appStoreUrl={appStoreUrl} playStoreUrl={playStoreUrl} />
+</Layout>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(({ target, isIntersecting }) => {
+      if (isIntersecting) {
+        target.classList.add('visible');
+        observer.unobserve(target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  const selectors = ['.sec-head', '.feat-card', '.stat', '.step', '.dl-left', '.qr-card'];
+  selectors.forEach(sel => {
+    document.querySelectorAll(sel).forEach((el, i) => {
+      el.classList.add('anim-item');
+      (el as HTMLElement).style.transitionDelay = `${(i % 6) * 0.1}s`;
+      observer.observe(el);
+    });
+  });
+</script>
