@@ -42,7 +42,7 @@ const { appStoreUrl, playStoreUrl } = Astro.props;
     <div class="hero-right">
       <div class="phone-mockup">
         <div class="phone-notch"></div>
-        <img src="/screenshots/init.png" alt="TopoQuizz pantalla inicial" class="phone-img" />
+        <img src={`${import.meta.env.BASE_URL}screenshots/init.png`} alt="TopoQuizz pantalla inicial" class="phone-img" />
       </div>
     </div>
   </div>
@@ -56,6 +56,6 @@ const { appStoreUrl, playStoreUrl } = Astro.props;
     renderer: 'svg',
     loop: true,
     autoplay: true,
-    path: '/HomeMole.json',
+    path: `${import.meta.env.BASE_URL}HomeMole.json`,
   });
 </script>

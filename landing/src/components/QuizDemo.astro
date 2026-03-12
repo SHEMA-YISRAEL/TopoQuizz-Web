@@ -298,7 +298,7 @@ const questions = [
       renderer: 'svg',
       loop: true,
       autoplay: true,
-      path: isCorrect ? '/assets/Correct.json' : '/assets/Incorrect.json',
+      path: isCorrect ? `${import.meta.env.BASE_URL}assets/Correct.json` : `${import.meta.env.BASE_URL}assets/HomeMole.json`,
     });
 
     overlay.querySelector('.qd-feedback-btn')?.addEventListener('click', () => {
@@ -352,13 +352,13 @@ const questions = [
     lottie.loadAnimation({
       container: root.querySelector('#confetti-lottie') as HTMLElement,
       renderer: 'svg', loop: true, autoplay: true,
-      path: '/assets/Confetti.json',
+      path: `${import.meta.env.BASE_URL}assets/Confetti.json`,
     });
 
     lottie.loadAnimation({
       container: root.querySelector('#podium-lottie') as HTMLElement,
       renderer: 'svg', loop: true, autoplay: true,
-      path: '/assets/Podium.json',
+      path: `${import.meta.env.BASE_URL}assets/Podium.json`,
     });
 
     root.querySelector('.qd-result-retry')?.addEventListener('click', () => {
