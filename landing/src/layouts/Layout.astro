@@ -8,7 +8,7 @@ interface Props {
 
 const {
   title = 'TopoQuizz — El Quiz Médico para Estudiantes',
-  description = 'Domina la medicina con TopoQuizz. Preguntas de Anatomía, Farmacología, Bioquímica y más. Practica, aprende y supera tus exámenes.',
+  description = 'Domina la medicina con TopoQuizz. Preguntas de Anatomía, Farmacología y más. Practica, aprende y repasa.',
 } = Astro.props;
 
 const siteUrl = 'https://topoquizz.com';
@@ -25,7 +25,7 @@ const ogImage = `${siteUrl}/logoTopoQuizz.png`;
   <!-- Primary -->
   <title>{title}</title>
   <meta name="description" content={description} />
-  <meta name="keywords" content="quiz médico, medicina, anatomía, farmacología, bioquímica, estudiantes de medicina, preguntas de medicina, app médica, examen médico" />
+  <meta name="keywords" content="quiz médico, medicina, anatomía, farmacología, estudiantes de medicina, preguntas de medicina, app médica, examen médico" />
   <meta name="author" content="TopoQuizz" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href={siteUrl} />

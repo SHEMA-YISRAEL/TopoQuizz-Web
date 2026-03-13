@@ -133,11 +133,22 @@ body {
   color: var(--green) !important;
 }
 .beta-label a {
-  color: var(--white);
+  color: var(--green);
   text-decoration: none;
+  font-weight: 700;
+  font-size: 0.875rem;
+  background: rgba(74, 222, 128, 0.12);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  transition:
+    background 0.2s,
+    border-color 0.2s;
 }
 .beta-label a:hover {
-  text-decoration: underline;
+  background: rgba(74, 222, 128, 0.25);
+  border-color: var(--green);
+  text-decoration: none;
 }
 
 /* ── HEADER ── */
