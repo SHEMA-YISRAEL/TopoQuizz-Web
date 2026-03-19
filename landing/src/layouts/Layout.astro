@@ -13,6 +13,52 @@ const {
 
 const siteUrl = 'https://topoquizz.com';
 const ogImage = `${siteUrl}/logoTopoQuizz.png`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "TopoQuizz",
+      "url": siteUrl,
+      "description": "App de quiz médico para estudiantes de medicina. Practica Anatomía, Farmacología, Bioquímica y más con preguntas cronometradas y seguimiento de progreso.",
+      "applicationCategory": "EducationApplication",
+      "operatingSystem": "iOS, Android",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "screenshot": `${siteUrl}/screenshots/quizz.png`,
+      "featureList": [
+        "Preguntas de Anatomía y Farmacología",
+        "Modo cronómetro",
+        "3 niveles de dificultad",
+        "Progreso detallado",
+        "Modo sin conexión"
+      ],
+      "inLanguage": "es",
+      "image": ogImage
+    },
+    {
+      "@type": "Organization",
+      "name": "TopoQuizz",
+      "url": siteUrl,
+      "logo": ogImage,
+      "sameAs": [
+        "https://www.instagram.com/topoquizz",
+        "https://www.tiktok.com/@topoquizz3",
+        "https://www.facebook.com/profile.php?id=61585292563440"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "name": "TopoQuizz",
+      "url": siteUrl,
+      "inLanguage": "es"
+    }
+  ]
+};
 ---
 
 <!DOCTYPE html>
@@ -49,6 +95,9 @@ const ogImage = `${siteUrl}/logoTopoQuizz.png`;
   <!-- Favicon -->
   <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.png`} type="image/png" />
   <link rel="shortcut icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
