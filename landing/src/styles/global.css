@@ -1141,9 +1141,7 @@ body {
     gap: 8px;
   }
   .beta-card::before {
-    top: 8px;
-    font-size: 8px;
-    padding: 2px 8px;
+    display: none;
   }
   .qr-box {
     width: 96px;
