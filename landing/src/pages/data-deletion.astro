@@ -1,0 +1,289 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="Data Deletion — TopoQuizz"
+  description="Learn how to request deletion of your personal data from TopoQuizz."
+>
+  <Header />
+
+  <main class="privacy-page">
+    <div class="privacy-hero">
+      <div class="privacy-hero-inner">
+        <span class="sec-badge">Legal</span>
+        <h1>Data Deletion Request</h1>
+        <p>Last updated: April 21, 2026</p>
+      </div>
+    </div>
+
+    <div class="privacy-body">
+      <div class="privacy-content">
+
+        <p>
+          TopoQuizz, operated by <strong>SHEMED YISRAEL SOFTWARE CREATION LLC</strong>, respects your right
+          to have your personal data deleted. This page explains what data we collect, what gets deleted when
+          you request it, and how to submit a deletion request.
+        </p>
+
+        <h2>1. Data We Collect via Facebook Login</h2>
+        <p>
+          When you sign in to TopoQuizz using Facebook Login, we may receive and store the following
+          information from your Facebook account, subject to the permissions you granted:
+        </p>
+        <ul>
+          <li>Full name</li>
+          <li>Email address</li>
+          <li>Facebook user ID</li>
+          <li>Basic profile information (profile picture, locale)</li>
+        </ul>
+        <p>
+          This information is used solely to create and manage your TopoQuizz account. We do not use it
+          for advertising targeting or share it with third parties beyond what is described in our
+          <a href="/privacy">Privacy Policy</a>.
+        </p>
+
+        <h2>2. What Gets Deleted</h2>
+        <p>When we process a data deletion request, we delete or anonymize:</p>
+        <ul>
+          <li>Your account profile (name, email, Facebook user ID)</li>
+          <li>Your quiz history, scores, and progress</li>
+          <li>Saved content, favorites, and avatar selection</li>
+          <li>Any other personal data associated with your account</li>
+        </ul>
+        <p>
+          We may retain certain non-personal or aggregated data that cannot be linked back to you, and data
+          we are legally required to retain for compliance, fraud prevention, or dispute resolution purposes.
+        </p>
+
+        <h2>3. How to Request Deletion</h2>
+        <p>To request deletion of your data, send an email to:</p>
+
+        <div class="deletion-cta">
+          <div class="deletion-cta-inner">
+            <div class="deletion-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+            </div>
+            <div>
+              <p class="deletion-label">Send your request to</p>
+              <a href="mailto:administracion@shemayisraelsrl.com" class="deletion-email">
+                administracion@shemayisraelsrl.com
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <p>Include the following in your email:</p>
+        <ul>
+          <li>Subject line: <strong>"Data Deletion Request — TopoQuizz"</strong></li>
+          <li>The email address associated with your account</li>
+          <li>Confirmation that you wish to permanently delete your account and data</li>
+        </ul>
+
+        <h2>4. Processing Time</h2>
+        <p>
+          We will acknowledge your request within <strong>5 business days</strong> and complete the
+          deletion within <strong>30 days</strong> of receiving your request. We will send a confirmation
+          email once the deletion is complete.
+        </p>
+
+        <h2>5. Contact</h2>
+        <p>For any questions about this process, contact us at:</p>
+        <address>
+          <strong>SHEMED YISRAEL SOFTWARE CREATION LLC</strong><br />
+          4851 W Hillsboro Blvd Ste A3<br />
+          Pompano Beach, FL 33073<br />
+          United States<br />
+          Email: <a href="mailto:administracion@shemayisraelsrl.com">administracion@shemayisraelsrl.com</a>
+        </address>
+
+      </div>
+    </div>
+  </main>
+
+  <Footer appStoreUrl="#" playStoreUrl="#" />
+</Layout>
+
+<style>
+  .privacy-page {
+    min-height: 100vh;
+  }
+
+  .privacy-hero {
+    background: linear-gradient(121deg, #3b4d6d 0%, var(--blue) 60%, var(--blue-mid) 100%);
+    padding: 72px 0 64px;
+  }
+
+  .privacy-hero-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .privacy-hero h1 {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.15;
+  }
+
+  .privacy-hero p {
+    color: var(--blue-light);
+    font-size: 14px;
+  }
+
+  .privacy-body {
+    padding: 64px 0 96px;
+    background: var(--bg);
+  }
+
+  .privacy-content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .privacy-content p {
+    color: var(--teal);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .privacy-content h2 {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-top: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid var(--blue-pale);
+  }
+
+  .privacy-content ul {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .privacy-content li {
+    color: var(--teal);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .privacy-content a {
+    color: var(--blue);
+    text-decoration: underline;
+    transition: color 0.2s;
+  }
+
+  .privacy-content a:hover {
+    color: var(--navy);
+  }
+
+  .privacy-content strong {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .deletion-cta {
+    background: var(--white);
+    border: 2px solid var(--blue-pale);
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow: 0 2px 12px rgba(40, 49, 67, 0.05);
+  }
+
+  .deletion-cta-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .deletion-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--blue-pale);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+
+  .deletion-label {
+    font-size: 13px;
+    color: var(--teal);
+    margin: 0 0 4px 0;
+    line-height: 1;
+  }
+
+  .deletion-email {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--blue);
+    text-decoration: none;
+  }
+
+  .deletion-email:hover {
+    color: var(--navy);
+    text-decoration: underline;
+  }
+
+  address {
+    font-style: normal;
+    background: var(--white);
+    border-radius: 16px;
+    padding: 24px 28px;
+    color: var(--teal);
+    font-size: 15px;
+    line-height: 2;
+    box-shadow: 0 2px 12px rgba(40, 49, 67, 0.05);
+  }
+
+  address strong {
+    display: block;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  @media (max-width: 768px) {
+    .privacy-hero-inner,
+    .privacy-content {
+      padding: 0 20px;
+    }
+
+    .privacy-hero {
+      padding: 48px 0 40px;
+    }
+
+    .privacy-hero h1 {
+      font-size: 32px;
+    }
+
+    .privacy-body {
+      padding: 48px 0 72px;
+    }
+
+    .deletion-cta-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  }
+</style>
