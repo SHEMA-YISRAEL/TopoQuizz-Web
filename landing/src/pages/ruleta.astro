@@ -1,0 +1,1008 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Ruleta Médica — TopoQuizz" description="Juego de ruleta médica para estudiantes de medicina.">
+
+<style is:global>
+  /* override body bg for this page */
+  body {
+    background: linear-gradient(135deg, #1a2535 0%, #283143 50%, #1e3a5f 100%) !important;
+    min-height: 100vh;
+  }
+
+  /* ── BOTONES GLOBALES (aplican a elementos dinámicos también) ── */
+  .rbtn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 24px; border-radius: 16px;
+    font-family: "Plus Jakarta Sans", Inter, sans-serif;
+    font-weight: 700; font-size: 14px; letter-spacing: 0.3px;
+    cursor: pointer; border: none;
+    transition: transform 0.18s cubic-bezier(.34,1.56,.64,1), box-shadow 0.18s, background 0.18s;
+    position: relative; overflow: hidden;
+  }
+  .rbtn:hover:not(:disabled) { transform: translateY(-3px); }
+  .rbtn:active:not(:disabled) { transform: translateY(-1px) scale(0.98); }
+  .rbtn:disabled { opacity: 0.38; cursor: not-allowed; transform: none !important; }
+
+  .rbtn-ver {
+    background: linear-gradient(135deg, #6e96c3 0%, #4d7bae 100%);
+    color: #ffffff !important; flex: 1;
+    box-shadow: 0 4px 14px rgba(78,123,174,0.4);
+  }
+  .rbtn-ver:hover:not(:disabled) { box-shadow: 0 8px 24px rgba(78,123,174,0.6); }
+
+  .rbtn-ok {
+    background: linear-gradient(135deg, #a3ccb0 0%, #72b088 100%);
+    color: #1a2f22 !important;
+    box-shadow: 0 4px 14px rgba(114,176,136,0.35);
+  }
+  .rbtn-ok:hover:not(:disabled) { box-shadow: 0 8px 24px rgba(114,176,136,0.55); }
+
+  .rbtn-cambiar {
+    background: rgba(255,255,255,0.08); color: #e0ecf4 !important;
+    border: 1.5px solid rgba(255,255,255,0.2) !important;
+    backdrop-filter: blur(8px);
+  }
+  .rbtn-cambiar:hover:not(:disabled) {
+    background: rgba(255,255,255,0.16);
+    border-color: rgba(255,255,255,0.32) !important;
+    box-shadow: 0 4px 16px rgba(255,255,255,0.1);
+  }
+
+  .rbtn-girar {
+    background: linear-gradient(135deg, #2a6496 0%, #1e4d78 100%);
+    color: #ffffff !important;
+    padding: 15px 48px !important; font-size: 15px !important; border-radius: 28px !important;
+    box-shadow: 0 4px 20px rgba(30,77,120,0.5);
+    letter-spacing: 0.5px;
+  }
+  .rbtn-girar:hover:not(:disabled) {
+    background: linear-gradient(135deg, #3478b0 0%, #2860a0 100%);
+    box-shadow: 0 10px 32px rgba(30,77,120,0.7);
+  }
+</style>
+
+<style>
+  /* ── HEADER ── */
+  .r-header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--white);
+    box-shadow: 0 2px 16px rgba(40,49,67,0.06);
+  }
+  .r-header-inner {
+    max-width: 1280px; margin: 0 auto;
+    padding: 0 80px; height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .r-logo {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 800; font-size: 20px;
+    text-decoration: none; color: var(--navy);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .r-logo-img {
+    width: 40px; height: 40px; border-radius: 10px;
+    object-fit: contain;
+  }
+  .r-badge-header {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(110,150,195,0.1); color: #5b7fb5;
+    padding: 6px 16px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+  }
+
+  /* ── HERO ── */
+  .r-hero {
+    background: linear-gradient(121deg, #3b4d6d 0%, var(--blue) 60%, var(--blue-mid) 100%);
+    padding: 56px 80px 48px;
+    display: flex; align-items: center;
+    justify-content: center; gap: 48px; flex-wrap: wrap;
+  }
+  .r-hero-text {
+    max-width: 480px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .r-hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(163,204,176,0.15); color: var(--green);
+    padding: 6px 16px; border-radius: 20px;
+    font-size: 12px; font-weight: 600; width: fit-content;
+    animation: rFadeUp 0.5s ease both;
+  }
+  .r-hero-badge-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green); flex-shrink: 0;
+    animation: rPulse 2s ease-in-out infinite;
+  }
+  .r-hero-text h1 {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 52px; font-weight: 800; line-height: 1.05;
+    color: var(--white);
+    animation: rFadeUp 0.5s 0.1s ease both;
+  }
+  .r-hero-text p {
+    color: var(--blue-light); font-size: 15px; line-height: 1.7;
+    animation: rFadeUp 0.5s 0.2s ease both;
+  }
+  .r-mascot {
+    width: 200px; height: 200px; flex-shrink: 0;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.45));
+    animation: rSlideIn 0.7s 0.2s ease both, rFloat 4s 1s ease-in-out infinite;
+  }
+
+  /* ── MAIN GAME ── */
+  .r-game {
+    max-width: 1200px; margin: 0 auto;
+    padding: 56px 40px 80px;
+    display: flex; align-items: flex-start;
+    justify-content: center; gap: 56px; flex-wrap: wrap;
+  }
+
+  /* ── WHEEL COLUMN ── */
+  .r-wheel-col {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 24px; flex-shrink: 0;
+  }
+  .r-wheel-label {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--blue-light);
+    opacity: 0.7;
+  }
+  .r-wheel-wrap {
+    position: relative; width: 540px; height: 540px;
+  }
+  .r-pointer {
+    position: absolute; top: -20px; left: 50%;
+    transform: translateX(-50%); z-index: 10;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+  }
+  #r-canvas {
+    display: block; border-radius: 50%;
+    box-shadow:
+      0 0 0 8px rgba(255,255,255,0.07),
+      0 0 0 14px rgba(255,255,255,0.03),
+      0 32px 80px rgba(0,0,0,0.7);
+  }
+  .r-spin-btn {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 96px; height: 96px; border-radius: 50%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 5;
+    transition: transform 0.15s;
+  }
+  .r-spin-btn:hover:not(:disabled) {
+    transform: translate(-50%,-50%) scale(1.08);
+  }
+  .r-spin-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: translate(-50%,-50%); }
+
+  /* ── RESULT COLUMN ── */
+  .r-result-col { flex: 1; min-width: 320px; max-width: 520px; }
+
+  /* idle */
+  .r-idle {
+    border-radius: 28px; padding: 48px 36px;
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    border: 1.5px dashed rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+  }
+  .r-idle .r-idle-emoji { font-size: 56px; }
+  .r-idle h3 {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 22px; font-weight: 800; color: var(--white);
+  }
+  .r-idle p { color: var(--blue-light); font-size: 14px; line-height: 1.7; max-width: 320px; }
+
+  /* result card */
+  .r-card {
+    border-radius: 28px; padding: 32px 36px;
+    display: flex; flex-direction: column; gap: 20px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .r-card.oculto  { opacity: 0; transform: translateY(20px); pointer-events: none; display: none; }
+  .r-card.visible { opacity: 1; transform: translateY(0); display: flex; }
+
+  /* slot header */
+  .r-slot-head { display: flex; align-items: center; gap: 16px; }
+  .r-slot-emoji { font-size: 44px; line-height: 1; flex-shrink: 0; }
+  .r-slot-name {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 24px; font-weight: 800; line-height: 1.1;
+  }
+  .r-slot-desc { font-size: 13px; color: var(--blue-light); margin-top: 4px; }
+  .r-sep { height: 1px; background: rgba(255,255,255,0.1); }
+
+  /* pregunta */
+  .r-q { display: flex; flex-direction: column; gap: 16px; }
+  .r-q-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  .r-tag {
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .r-tag.farmaco { background: rgba(110,150,195,0.2); color: var(--blue-light); }
+  .r-tag.anatom  { background: rgba(163,204,176,0.2); color: var(--green); }
+  .r-tag.dificil { background: rgba(242,139,130,0.2); color: var(--red); }
+
+  .r-timer {
+    margin-left: auto;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 26px; font-weight: 800; color: var(--white);
+    min-width: 60px; text-align: right;
+  }
+  .r-timer.urgente { color: var(--red); animation: rPulse 0.5s ease-in-out infinite; }
+
+  .r-segunda-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--green);
+    padding: 4px 0;
+  }
+
+  .r-q-texto {
+    font-size: 16px; line-height: 1.75; color: var(--white);
+    font-weight: 500;
+  }
+
+  .r-pista {
+    background: rgba(163,204,176,0.1);
+    border: 1px solid rgba(163,204,176,0.22);
+    border-radius: 14px; padding: 14px 18px;
+    font-size: 13px; color: var(--green); line-height: 1.6;
+  }
+
+  /* respuesta — oculta por defecto */
+  .r-resp {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 18px 22px;
+    font-size: 14px; line-height: 1.7; color: var(--blue-light);
+    display: none; /* SIEMPRE oculto hasta revelar */
+  }
+  .r-resp.mostrar {
+    display: block;
+    animation: rFadeUp 0.3s ease;
+  }
+  .r-resp-label {
+    display: block; color: var(--green);
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+
+  /* botones */
+  .r-acciones { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+  /* turno perdido */
+  .r-perdido {
+    text-align: center; padding: 8px 0;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .r-perdido .rp-emoji { font-size: 56px; }
+  .r-perdido h3 {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 24px; font-weight: 800; color: var(--white);
+  }
+  .r-perdido p { font-size: 14px; color: var(--blue-light); }
+  .r-girar-wrap { display: flex; justify-content: center; margin-top: 8px; }
+
+  /* animaciones */
+  @keyframes rFadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes rSlideIn {
+    from { opacity: 0; transform: translateX(48px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes rFloat {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-14px); }
+  }
+  @keyframes rPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.1); opacity: 0.7; }
+  }
+
+  /* responsive */
+  @media (max-width: 1024px) {
+    .r-header-inner { padding: 0 40px; }
+    .r-hero { padding: 40px; }
+    .r-game { padding: 40px 24px 60px; gap: 40px; }
+    .r-wheel-wrap { width: 440px; height: 440px; }
+    #r-canvas { width: 440px !important; height: 440px !important; }
+  }
+  @media (max-width: 768px) {
+    .r-header-inner { padding: 0 20px; }
+    .r-hero { padding: 32px 20px; gap: 20px; }
+    .r-hero-text h1 { font-size: 36px; }
+    .r-mascot { width: 130px; height: 130px; }
+    .r-wheel-wrap { width: 320px; height: 320px; }
+    #r-canvas { width: 320px !important; height: 320px !important; }
+    .r-spin-btn { width: 68px; height: 68px; font-size: 10px; }
+    .r-game { padding: 28px 16px 60px; gap: 24px; }
+    .r-card, .r-idle { padding: 24px 20px; }
+  }
+</style>
+
+<!-- fuentes extra para estilos de cada sector -->
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@800&family=Creepster&family=Bebas+Neue&family=Righteous&family=Oswald:wght@600;700&family=Merriweather:ital,wght@0,700;1,400&display=swap" rel="stylesheet" />
+
+<!-- HEADER -->
+<header class="r-header">
+  <div class="r-header-inner">
+    <a href="/" class="r-logo">
+      <img src="/logoTopoQuizz.png" alt="TopoQuizz" class="r-logo-img" />
+      <span><span style="color:var(--red)">Topo</span><span style="color:var(--green)">Quizz</span></span>
+    </a>
+    <span class="r-badge-header">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Ruleta Médica
+    </span>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="r-hero">
+  <div class="r-hero-text">
+    <div class="r-hero-badge">
+      <span class="r-hero-badge-dot"></span>
+      Modo Multijugador
+    </div>
+    <h1>Ruleta<br/>Médica</h1>
+    <p>Gira la ruleta y enfrenta el destino. ¿Posturno, emergencia o pregunta mortal? ¡Solo los mejores médicos sobreviven!</p>
+  </div>
+  <div class="r-mascot" id="r-mascot"></div>
+</div>
+
+<!-- JUEGO -->
+<div class="r-game">
+
+  <!-- RULETA -->
+  <div class="r-wheel-col">
+    <span class="r-wheel-label">Gira la ruleta</span>
+    <div class="r-wheel-wrap">
+      <svg class="r-pointer" width="36" height="42" viewBox="0 0 36 42">
+        <polygon points="18,42 0,6 36,6" fill="white" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
+        <circle cx="18" cy="8" r="7" fill="white" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
+      </svg>
+      <canvas id="r-canvas" width="540" height="540"></canvas>
+      <button class="r-spin-btn" id="r-spin-btn" aria-label="Girar ruleta"></button>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="r-result-col">
+
+    <div class="r-idle" id="r-idle">
+      <div class="r-idle-emoji">
+        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="rgba(110,150,195,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M19.07 4.93l-2.83 2.83M7.76 16.24l-2.83 2.83"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <h3>¿Estás listo?</h3>
+      <p>Presiona el botón central de la ruleta o el de abajo para comenzar. Cada sector tiene un efecto especial.</p>
+      <button class="rbtn rbtn-girar" id="r-idle-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M3 12l-2-2m2 2 2-2M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16m18-4 2 2m-2-2-2 2"/></svg>
+        Girar la ruleta
+      </button>
+    </div>
+
+    <div class="r-card oculto" id="r-card">
+      <div class="r-slot-head">
+        <div class="r-slot-emoji" id="r-slot-emoji"></div>
+        <div>
+          <div class="r-slot-name" id="r-slot-name"></div>
+          <div class="r-slot-desc" id="r-slot-desc"></div>
+        </div>
+      </div>
+      <div class="r-sep"></div>
+      <div id="r-dyn"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SCRIPT DE DATOS Y JUEGO (is:inline para evitar scoping) -->
+<script is:inline>
+(function() {
+
+/* Lucide SVG paths (viewBox 0 0 24 24, stroke-based) */
+var ICONS = {
+  /* RefreshCw */
+  posturno:      'M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M3 12l-2-2m2 2 2-2M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16m18-4 2 2m-2-2-2 2',
+  /* Stethoscope */
+  doctor:        'M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3M14 15a6 6 0 0 0 6 6v0M20 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4',
+  /* Skull (calavera completa) */
+  mortal:        'M12 2a8 8 0 0 0-8 8c0 3.19 1.87 5.95 4.6 7.28A1 1 0 0 1 9 18.28V20a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1.72a1 1 0 0 1 .4-.82A8 8 0 0 0 12 2zm-2 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm4 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z',
+  /* HeartPulse */
+  critico:       'M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7ZM3.22 12H9.5l1.5-3 2 4.5 1.5-2.5H21',
+  /* Moon (guardia nocturna) */
+  guardia:       'M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z',
+  /* Siren / AlertTriangle */
+  emergencia:    'M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z',
+  /* FileSignature */
+  consentimiento:'M20 19.5v.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8.5L18 5.5M15 2v4h4M12 12H8M16 16H8M10 8H8',
+};
+
+/* SVG completo para usar en HTML (tarjeta resultado, idle) */
+function svgIcon(id, size, color) {
+  size = size || 28; color = color || 'currentColor';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="' + color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + ICONS[id] + '"/></svg>';
+}
+
+var SLOTS = [
+  {
+    id:"posturno", label:"Posturno", desc:"¡Gira otra vez!",
+    color:"#6e96c3",
+    font:"'Pacifico', cursive",
+    cardBg:"linear-gradient(135deg,#1a2f4e 0%,#223a5e 100%)",
+    cardBorder:"rgba(110,150,195,0.35)",
+    nameStyle:"font-size:28px;letter-spacing:1px;",
+  },
+  {
+    id:"doctor", label:"Dr. Buena Onda", desc:"Recibes una pista",
+    color:"#a3ccb0",
+    font:"'Nunito', sans-serif",
+    cardBg:"linear-gradient(135deg,#1a3028 0%,#1e3d2f 100%)",
+    cardBorder:"rgba(163,204,176,0.35)",
+    nameStyle:"font-size:26px;font-weight:800;letter-spacing:0.5px;",
+  },
+  {
+    id:"mortal", label:"Pregunta mortal", desc:"",
+    color:"#f28b82",
+    font:"'Creepster', cursive",
+    cardBg:"linear-gradient(135deg,#2d1515 0%,#3d1a1a 100%)",
+    cardBorder:"rgba(242,139,130,0.4)",
+    nameStyle:"font-size:32px;letter-spacing:2px;text-shadow:0 0 12px rgba(242,139,130,0.5);",
+  },
+  {
+    id:"critico", label:"Paciente crítico", desc:"Pierdes tu turno",
+    color:"#d27067",
+    font:"'Bebas Neue', cursive",
+    cardBg:"linear-gradient(135deg,#2d1010 0%,#3a1515 100%)",
+    cardBorder:"rgba(210,112,103,0.4)",
+    nameStyle:"font-size:36px;letter-spacing:4px;",
+  },
+  {
+    id:"guardia", label:"Toca guardia", desc:"2 preguntas seguidas",
+    color:"#e8c840",
+    font:"'Righteous', cursive",
+    cardBg:"linear-gradient(135deg,#2a2510 0%,#332d12 100%)",
+    cardBorder:"rgba(232,200,64,0.35)",
+    nameStyle:"font-size:28px;letter-spacing:1px;",
+  },
+  {
+    id:"emergencia", label:"Emergencia médica", desc:"Responde en solo 20 segundos",
+    color:"#ff6b6b",
+    font:"'Oswald', sans-serif",
+    cardBg:"linear-gradient(135deg,#2d1a10 0%,#3d2015 100%)",
+    cardBorder:"rgba(255,107,107,0.4)",
+    nameStyle:"font-size:30px;letter-spacing:2px;font-weight:700;text-transform:uppercase;",
+  },
+  {
+    id:"consentimiento", label:"Consentimiento", desc:"Puedes cambiar de pregunta",
+    color:"#8ab0d0",
+    font:"'Merriweather', serif",
+    cardBg:"linear-gradient(135deg,#162030 0%,#1a2a3e 100%)",
+    cardBorder:"rgba(138,176,208,0.35)",
+    nameStyle:"font-size:24px;font-style:italic;letter-spacing:0.5px;",
+  },
+];
+
+/* SVG paths para botones */
+var SVG_VER    = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+var SVG_OK     = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+var SVG_CAMBIAR= '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 19.5v.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8.5L18 5.5M15 2v4h4M12 12H8M16 16H8M10 8H8"/></svg>';
+var SVG_GIRAR  = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M3 12l-2-2m2 2 2-2M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16m18-4 2 2m-2-2-2 2"/></svg>';
+var SVG_RAYO   = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
+
+/* helper: crea un botón con clases globales (is:global evita el scoping de Astro) */
+function mkBtn(cls, html, id) {
+  var b = document.createElement('button');
+  b.className = 'rbtn ' + cls;
+  b.innerHTML = html;
+  if (id) b.id = id;
+  return b;
+}
+
+var PREGUNTAS = [
+  { cat:"Farmacología", texto:"¿Cuál es el mecanismo de acción de los antagonistas de los receptores de angiotensina II (losartán)?", resp:"Bloquean selectivamente los receptores AT1 de la angiotensina II, inhibiendo la vasoconstricción, la secreción de aldosterona, la retención de sodio y agua, y el remodelado cardiovascular.", dificil:false },
+  { cat:"Farmacología", texto:"Menciona 3 fármacos bloqueadores de canales de Ca tipo L.", resp:"Amlodipino, nicardipino, nifedipino, nimodipino.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el mecanismo de acción del ibuprofeno?", resp:"Inhibe de forma reversible y no selectiva las enzimas COX-1 y COX-2, bloqueando la síntesis de prostaglandinas y tromboxanos.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el efecto adverso más común de los IECA?", resp:"La tos seca. Los IECA inhiben la degradación de la bradicinina, provocando su acumulación en las vías respiratorias.", dificil:false },
+  { cat:"Farmacología", texto:"Mencione 3 diuréticos de asa y 3 diuréticos tiazídicos.", resp:"Asa: furosemida, torasemida, bumetanida. Tiazídicos: hidroclorotiazida, clortalidona, indapamida.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuáles son los efectos adversos más comunes de los AINEs?", resp:"Gastrointestinales (dispepsia, gastritis, úlceras), renales (retención de líquidos, disfunción renal) y aumento de la presión arterial.", dificil:false },
+  { cat:"Farmacología", texto:"¿A qué familia pertenece la gentamicina y cuál es su mecanismo de acción?", resp:"Aminoglucósidos. Se une irreversiblemente a la subunidad 30S del ribosoma bacteriano, interfiriendo con la síntesis proteica.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el antídoto para la intoxicación por opioides?", resp:"La naloxona. Es antagonista competitivo de receptores opioides mu; revierte la depresión respiratoria y del SNC.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cómo se clasifican las insulinas según su tiempo de acción?", resp:"Ultrarrápida: lispro, aspart, glulisina. Corta: regular. Intermedia: NPH. Prolongada: glargina, detemir, degludec.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el mecanismo de acción de los macrólidos (azitromicina)?", resp:"Se unen reversiblemente a la subunidad 50S del ribosoma bacteriano, bloqueando la translocación e inhibiendo la síntesis proteica.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el esquema de primera línea para tuberculosis pulmonar sensible?", resp:"6 meses: Fase intensiva 2 meses con HRZE (isoniazida, rifampicina, pirazinamida, etambutol). Fase de continuación 4 meses con HR.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el antidiabético oral de primera línea para DM tipo 2 y su efecto adverso más frecuente?", resp:"Metformina. Efecto adverso más común: gastrointestinal (diarrea, náuseas, dolor abdominal).", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el antídoto para revertir sedación profunda por benzodiacepinas?", resp:"El flumazenilo.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuáles son los principales efectos adversos del uso crónico de glucocorticoides?", resp:"Osteoporosis, síndrome de Cushing iatrogénico, inmunosupresión, hiperglucemia, HTA, miopatía, fragilidad cutánea y supresión del eje HHS.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el mecanismo de acción de los IBP como el omeprazol?", resp:"Inhiben irreversiblemente la bomba H⁺/K⁺ ATPasa en las células parietales gástricas, bloqueando la secreción de HCl.", dificil:false },
+  { cat:"Anatomía", texto:"¿Cuál es el recorrido del sistema de conducción cardíaco?", resp:"Nodo sinusal → vías internodales → nodo AV → haz de His → ramas derecha e izquierda → fibras de Purkinje.", dificil:false },
+  { cat:"Anatomía", texto:"¿Qué arterias conforman el polígono de Willis?", resp:"Cerebrales anteriores, comunicante anterior, segmentos terminales de carótidas internas, comunicantes posteriores e iniciales de cerebrales posteriores.", dificil:false },
+  { cat:"Anatomía", texto:"¿Cuáles son las ramas principales de la arteria carótida externa?", resp:"Tiroidea superior, faríngea ascendente, lingual, facial, occipital, auricular posterior, maxilar y temporal superficial (las 2 últimas son terminales).", dificil:false },
+  { cat:"Anatomía", texto:"¿Qué vasos forman directamente la vena porta hepática?", resp:"La confluencia de la vena mesentérica superior y la vena esplénica, detrás del cuello del páncreas.", dificil:false },
+  { cat:"Anatomía", texto:"¿Dónde desemboca el conducto colédoco?", resp:"En la ampolla hepatopancreática (ampolla de Vater), en la papila duodenal mayor de la 2ª porción del duodeno.", dificil:false },
+  { cat:"Anatomía", texto:"¿Cuál es el recorrido del LCR desde su producción hasta su reabsorción?", resp:"Plexos coroideos → ventrículos laterales → 3er ventrículo → acueducto cerebral → 4to ventrículo → espacio subaracnoideo → granulaciones aracnoideas.", dificil:false },
+  { cat:"Anatomía", texto:"¿Cuáles son los músculos del manguito rotador?", resp:"Supraespinoso, infraespinoso, redondo menor y subescapular.", dificil:false },
+  { cat:"Anatomía", texto:"¿Qué estructuras atraviesan el túnel carpiano?", resp:"El nervio mediano y 9 tendones flexores: 4 del flexor superficial, 4 del flexor profundo y el tendón del flexor largo del pulgar.", dificil:false },
+  { cat:"Anatomía", texto:"¿Cuáles son las tres ramas del tronco celíaco?", resp:"Arteria gástrica izquierda, arteria hepática común y arteria esplénica.", dificil:false },
+  { cat:"Anatomía", texto:"¿En qué bronquio se aloja más frecuentemente un cuerpo extraño aspirado y por qué?", resp:"Bronquio principal derecho: más ancho, más corto y con trayecto más vertical.", dificil:false },
+  { cat:"Difícil", texto:"¿Cuál es el mecanismo fisiopatológico primario de la preeclampsia?", resp:"Invasión trofoblástica insuficiente de arterias espirales → alta resistencia vascular → hipoperfusión placentaria → factores antiangiogénicos → disfunción endotelial sistémica materna.", dificil:true },
+  { cat:"Difícil", texto:"¿Cuáles son los antihipertensivos de elección para la hipertensión en el embarazo?", resp:"Alfa metildopa, labetalol y nifedipino.", dificil:true },
+  { cat:"Difícil", texto:"¿Para qué patología se usan los criterios de Framingham? Menciona criterios mayores y menores.", resp:"Para ICC. Requiere 2 mayores o 1 mayor + 2 menores. Mayores: DPN, ingurgitación yugular, crepitantes, cardiomegalia, EAP, S3, reflujo hepatoyugular. Menores: edema bilateral, tos nocturna, disnea de esfuerzo, hepatomegalia, derrame pleural, taquicardia >120.", dificil:true },
+  { cat:"Difícil", texto:"¿Qué evalúa el test de Apgar, cuándo se aplica y cuáles son sus parámetros?", resp:"Evalúa la adaptación cardiorrespiratoria del RN al 1er y 5to minuto. Parámetros: FC, esfuerzo respiratorio, tono muscular, irritabilidad refleja y coloración.", dificil:true },
+  { cat:"Difícil", texto:"Causas de hemorragia obstétrica clasificadas por mitad del embarazo.", resp:"1ª mitad: aborto, embarazo ectópico, mola hidatidiforme, hemorragia de implantación, patologías del tracto genital. 2ª mitad: placenta previa, abruptio placentae, rotura uterina, vasa previa, tapón mucoso.", dificil:true },
+  { cat:"Difícil", texto:"¿Qué es la tríada de Charcot y qué patología sugiere?", resp:"Fiebre + dolor en hipocondrio derecho + ictericia. Sugiere colangitis aguda.", dificil:true },
+  { cat:"Difícil", texto:"3 diferencias clínicas y de laboratorio entre CAD y EHH.", resp:"1) Déficit insulínico: absoluto en CAD (cetogénesis), relativo en EHH. 2) Ácido-base: CAD con acidosis metabólica pH<7.3, EHH con pH normal sin cetosis. 3) Glucemia/osmolaridad: EHH >600 mg/dL y >320 mOsm/kg.", dificil:true },
+  { cat:"Difícil", texto:"¿En qué consiste la maniobra de Murphy y qué patología sugiere su positividad?", resp:"Palpación profunda del punto cístico durante inspiración profunda. Positiva si el dolor interrumpe bruscamente la inspiración. Sugiere colecistitis aguda.", dificil:true },
+  { cat:"Difícil", texto:"¿Cuál es el fármaco de elección para prevenir y tratar convulsiones en preeclampsia severa o eclampsia?", resp:"El sulfato de magnesio.", dificil:true },
+  { cat:"Difícil", texto:"¿Qué es la tríada de Beck y qué emergencia cardiovascular sugiere?", resp:"Hipotensión arterial + ingurgitación yugular + ruidos cardíacos apagados. Sugiere taponamiento cardíaco agudo.", dificil:true },
+  { cat:"Difícil", texto:"¿Qué estructura anatómica define el límite entre obstrucción intestinal alta y baja?", resp:"El ángulo de Treitz (flexura duodenoyeyunal).", dificil:true },
+  { cat:"Difícil", texto:"¿Qué es la tríada de Whipple y cuáles son sus criterios?", resp:"Confirma hipoglucemia clínica verdadera: síntomas compatibles + glucosa plasmática baja documentada durante los síntomas + resolución al corregir la glucemia.", dificil:true },
+  { cat:"Difícil", texto:"¿Cuál es el tratamiento de elección para sífilis primaria y secundaria en adultos?", resp:"Penicilina G Benzatínica, dosis única de 2.4 millones UI intramuscular profunda.", dificil:true },
+  { cat:"Difícil", texto:"¿Qué es la tríada de Cushing y qué complicación neurológica sugiere?", resp:"HTA con presión de pulso ensanchada + bradicardia + alteración respiratoria. Sugiere hipertensión intracraneal severa con riesgo de herniación cerebral.", dificil:true },
+  { cat:"Difícil", texto:"Diferencias fundamentales entre síndrome nefrótico y síndrome nefrítico.", resp:"Nefrótico: aumento de permeabilidad glomerular → proteinuria >3.5 g/24h, hipoalbuminemia, edema severo, hiperlipidemia. Nefrítico: inflamación glomerular → hematuria con cilindros hemáticos, HTA y deterioro rápido de función renal.", dificil:true },
+];
+
+/* ─── CANVAS ─── */
+var cv  = document.getElementById('r-canvas');
+var ctx = cv.getContext('2d');
+var N   = SLOTS.length;
+var ARC = (2 * Math.PI) / N;
+
+/* outer ring decoration */
+function drawWheel(angle) {
+  var cx = cv.width / 2, cy = cv.height / 2, r = cx - 6;
+
+  ctx.clearRect(0, 0, cv.width, cv.height);
+
+  /* outer decorative rings */
+  ctx.beginPath();
+  ctx.arc(cx, cy, r + 10, 0, 2 * Math.PI);
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx, cy, r + 5, 0, 2 * Math.PI);
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  for (var i = 0; i < N; i++) {
+    var start = angle + i * ARC;
+    var end   = start + ARC;
+    var mid   = start + ARC / 2;
+
+    /* slice */
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.fillStyle = SLOTS[i].color;
+    ctx.fill();
+
+    /* border */
+    ctx.strokeStyle = 'rgba(0,0,0,0.22)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    /* inner highlight arc */
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.clip();
+    var gr = ctx.createRadialGradient(cx, cy, r * 0.3, cx, cy, r);
+    gr.addColorStop(0, 'rgba(255,255,255,0.18)');
+    gr.addColorStop(1, 'rgba(0,0,0,0.0)');
+    ctx.fillStyle = gr;
+    ctx.fill();
+    ctx.restore();
+
+    /* text — centrado en el sector, radiando desde el borde hacia el hub */
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(mid);
+
+    /* punto medio del sector: entre el hub (r=50) y el borde (r) */
+    var innerR = 52;
+    var textR  = innerR + (r - innerR) * 0.58; /* ~58% del camino desde el hub */
+
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+
+    /* sombra suave para legibilidad */
+    ctx.shadowColor  = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur   = 6;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 2;
+
+    /* icono Lucide — arriba del texto */
+    var iconSize = 20;
+    var iconPath = new Path2D(ICONS[SLOTS[i].id]);
+    ctx.save();
+    /* mover al punto textR,-16 y escalar de 24px viewBox a iconSize */
+    var sc = iconSize / 24;
+    ctx.translate(textR - iconSize / 2, -16 - iconSize / 2);
+    ctx.scale(sc, sc);
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth   = 2 / sc;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.shadowBlur  = 8 / sc;
+    ctx.stroke(iconPath);
+    ctx.restore();
+
+    /* etiqueta — debajo del icono */
+    ctx.font = 'bold 15px "Plus Jakarta Sans", Inter, sans-serif';
+    ctx.fillStyle = '#e7e7e7';
+    ctx.shadowColor  = 'rgba(0,0,0,0.7)';
+    ctx.shadowBlur   = 21;
+    var words = SLOTS[i].label.split(' ');
+    if (words.length === 1) {
+      ctx.fillText(words[0], textR, 12);
+    } else if (words.length === 2) {
+      ctx.fillText(words[0], textR, 6);
+      ctx.fillText(words[1], textR, 24);
+    } else {
+      var h = Math.ceil(words.length / 2);
+      ctx.fillText(words.slice(0, h).join(' '), textR, 6);
+      ctx.fillText(words.slice(h).join(' '),    textR, 24);
+    }
+
+    ctx.shadowColor = 'transparent';
+    ctx.restore();
+  }
+
+  /* center hub — outer glow ring */
+  ctx.beginPath();
+  ctx.arc(cx, cy, 52, 0, 2 * Math.PI);
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fill();
+
+  /* hub fill */
+  var hubGr = ctx.createRadialGradient(cx, cy, 0, cx, cy, 48);
+  hubGr.addColorStop(0, '#3b4d6d');
+  hubGr.addColorStop(1, '#161d1d');
+  ctx.beginPath();
+  ctx.arc(cx, cy, 48, 0, 2 * Math.PI);
+  ctx.fillStyle = hubGr;
+  ctx.fill();
+
+  /* hub border */
+  ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  /* hub inner border */
+  ctx.beginPath();
+  ctx.arc(cx, cy, 42, 0, 2 * Math.PI);
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  /* hub text — GIRAR */
+  ctx.font = 'bold 11px "Plus Jakarta Sans", Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 4;
+  ctx.fillText('GIRAR', cx, cy);
+  ctx.shadowColor = 'transparent';
+}
+
+var currentAngle = -Math.PI / 2;
+var spinning = false;
+/* esperar a que las fuentes decorativas carguen antes del primer draw */
+document.fonts.ready.then(function() { drawWheel(currentAngle); });
+
+/* ─── SPIN ─── */
+var spinBtn  = document.getElementById('r-spin-btn');
+var idleEl   = document.getElementById('r-idle');
+var cardEl   = document.getElementById('r-card');
+
+function girar() {
+  if (spinning) return;
+  spinning = true;
+  spinBtn.disabled = true;
+  idleEl.style.display = 'none';
+  cardEl.classList.remove('visible');
+  cardEl.classList.add('oculto');
+
+  var sector = Math.floor(Math.random() * N);
+  var from   = currentAngle;
+
+  /* ángulo final donde debe quedar el puntero (centro del sector elegido) */
+  var finalAngle = -(sector * ARC + ARC / 2) - Math.PI / 2;
+
+  /* normalizar finalAngle para que esté "adelante" de from */
+  var normalizedFinal = finalAngle % (2 * Math.PI);
+  var normalizedFrom  = from % (2 * Math.PI);
+  var shortDelta = ((normalizedFinal - normalizedFrom) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+
+  /* garantizar mínimo 5 vueltas completas + el arco hasta el sector */
+  var minVueltas = 5;
+  var extra = minVueltas + Math.floor(Math.random() * 4); /* 5–8 vueltas */
+  var delta = shortDelta + extra * 2 * Math.PI;
+
+  var target = from + delta;
+  var dur    = 4000 + Math.random() * 1500;
+  var t0     = performance.now();
+
+  function ease(t) { return 1 - Math.pow(1 - t, 4); }
+
+  function frame(now) {
+    var t = Math.min((now - t0) / dur, 1);
+    drawWheel(from + delta * ease(t));
+    if (t < 1) { requestAnimationFrame(frame); }
+    else {
+      currentAngle = target % (2 * Math.PI);
+      spinning = false;
+      spinBtn.disabled = false;
+      mostrarResultado(sector);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+spinBtn.addEventListener('click', girar);
+document.getElementById('r-idle-btn').addEventListener('click', girar);
+
+/* ─── PREGUNTAS ─── */
+var usadasN = [], usadasD = [];
+var timerID = null, modoDoble = false, puedeCambiar = false;
+
+function elegir(dificil) {
+  var pool  = PREGUNTAS.filter(function(p){ return p.dificil === dificil; });
+  var usadas = dificil ? usadasD : usadasN;
+  var libres = pool.map(function(_,i){ return i; }).filter(function(i){ return usadas.indexOf(i) < 0; });
+  if (!libres.length) { libres = pool.map(function(_,i){ return i; }); if(dificil) usadasD=[]; else usadasN=[]; }
+  var pick = libres[Math.floor(Math.random() * libres.length)];
+  if (dificil) usadasD.push(pick); else usadasN.push(pick);
+  return pool[pick];
+}
+
+function calcPista(q) {
+  return '💡 Pista: «' + q.resp.split(' ').slice(0, 6).join(' ') + '…»';
+}
+
+function pararTimer() {
+  if (timerID) { clearInterval(timerID); timerID = null; }
+}
+
+function iniciarTimer(segs) {
+  pararTimer();
+  var el = document.getElementById('r-timer');
+  if (!el) return;
+  var rem = segs;
+  el.textContent = rem + 's';
+  el.classList.remove('urgente');
+  timerID = setInterval(function(){
+    rem--;
+    var t = document.getElementById('r-timer');
+    if (t) { t.textContent = rem + 's'; if (rem <= 5) t.classList.add('urgente'); }
+    if (rem <= 0) { pararTimer(); revelar(); var t2=document.getElementById('r-timer'); if(t2){t2.textContent='⏰';t2.classList.add('urgente');} }
+  }, 1000);
+}
+
+function revelar() {
+  var r = document.getElementById('r-resp');
+  var b = document.getElementById('r-btn-ver');
+  if (r) { r.style.display = 'block'; r.classList.add('mostrar'); }
+  if (b) b.disabled = true;
+}
+
+var S_TAG_BASE   = 'padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;';
+var S_TAG_FARM   = S_TAG_BASE + 'background:rgba(110,150,195,0.25);color:#a8c6dd;';
+var S_TAG_ANAT   = S_TAG_BASE + 'background:rgba(163,204,176,0.2);color:#a3ccb0;';
+var S_TAG_DIFIC  = S_TAG_BASE + 'background:rgba(242,139,130,0.2);color:#f28b82;';
+
+function tag(q) {
+  if (q.dificil) return '<span style="' + S_TAG_DIFIC + '">Difícil</span>';
+  if (q.cat === 'Farmacología') return '<span style="' + S_TAG_FARM + '">Farmacología</span>';
+  return '<span style="' + S_TAG_ANAT + '">Anatomía</span>';
+}
+
+function renderQ(q, opts) {
+  opts = opts || {};
+  var dyn = document.getElementById('r-dyn');
+
+  /* contenedor principal */
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:16px;';
+
+  /* segunda pregunta label */
+  if (opts.segunda) {
+    var seg = document.createElement('div');
+    seg.style.cssText = 'font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#a3ccb0;padding:4px 0;';
+    seg.textContent = '⚡ Segunda pregunta — Toca Guardia';
+    wrap.appendChild(seg);
+  }
+
+  /* fila tag + timer */
+  var fila = document.createElement('div');
+  fila.style.cssText = 'display:flex;align-items:center;gap:10px;flex-wrap:wrap;';
+  fila.innerHTML = tag(q);
+  if (opts.timer) {
+    var timer = document.createElement('span');
+    timer.id = 'r-timer';
+    timer.style.cssText = 'margin-left:auto;font-family:"Plus Jakarta Sans",Inter,sans-serif;font-size:26px;font-weight:800;color:#ffffff;min-width:60px;text-align:right;';
+    timer.textContent = '20s';
+    fila.appendChild(timer);
+  }
+  wrap.appendChild(fila);
+
+  /* pregunta */
+  var pregEl = document.createElement('div');
+  pregEl.style.cssText = 'font-size:16px;line-height:1.75;color:#ffffff;font-weight:500;';
+  pregEl.textContent = q.texto;
+  wrap.appendChild(pregEl);
+
+  /* pista */
+  if (opts.pista) {
+    var pista = document.createElement('div');
+    pista.style.cssText = 'background:rgba(163,204,176,0.1);border:1px solid rgba(163,204,176,0.22);border-radius:14px;padding:14px 18px;font-size:13px;color:#a3ccb0;line-height:1.6;';
+    pista.textContent = calcPista(q);
+    wrap.appendChild(pista);
+  }
+
+  /* respuesta (oculta) */
+  var resp = document.createElement('div');
+  resp.id = 'r-resp';
+  resp.style.cssText = 'display:none;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px 22px;font-size:14px;line-height:1.7;color:#a8c6dd;';
+  var label = document.createElement('span');
+  label.style.cssText = 'display:block;color:#a3ccb0;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;';
+  label.textContent = 'Respuesta';
+  resp.appendChild(label);
+  resp.appendChild(document.createTextNode(q.resp));
+  wrap.appendChild(resp);
+
+  /* acciones */
+  var acc = document.createElement('div');
+  acc.id = 'r-acciones';
+  acc.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;';
+
+  var bVer = mkBtn('rbtn-ver', SVG_VER + ' Ver respuesta', 'r-btn-ver');
+  acc.appendChild(bVer);
+
+  if (opts.cambiar) {
+    var bCambiar = mkBtn('rbtn-cambiar', SVG_CAMBIAR + ' Cambiar pregunta', 'r-btn-cambiar');
+    acc.appendChild(bCambiar);
+  }
+
+  wrap.appendChild(acc);
+  dyn.innerHTML = '';
+  dyn.appendChild(wrap);
+
+  document.getElementById('r-btn-ver').addEventListener('click', function(){
+    pararTimer();
+    revelar();
+    var accEl = document.getElementById('r-acciones');
+    if (modoDoble && !opts.segunda) {
+      var b2 = mkBtn('rbtn-ok', SVG_RAYO + ' Segunda pregunta');
+      b2.addEventListener('click', function(){ modoDoble = false; renderQ(elegir(false), { segunda: true }); });
+      accEl.appendChild(b2);
+    } else {
+      var bOk = mkBtn('rbtn-ok', SVG_OK + ' Listo, siguiente turno');
+      bOk.addEventListener('click', resetear);
+      accEl.appendChild(bOk);
+    }
+  });
+
+  var bcEl = document.getElementById('r-btn-cambiar');
+  if (bcEl) {
+    bcEl.addEventListener('click', function(){
+      if (!puedeCambiar) return;
+      puedeCambiar = false; renderQ(elegir(false), {});
+    });
+  }
+
+  if (opts.timer) iniciarTimer(20);
+}
+
+function resetear() {
+  pararTimer(); modoDoble = false; puedeCambiar = false;
+  var dyn = document.getElementById('r-dyn');
+  dyn.innerHTML = '';
+
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0 4px;';
+
+  var txt = document.createElement('p');
+  txt.style.cssText = 'color:#a8c6dd;font-size:14px;text-align:center;line-height:1.6;';
+  txt.textContent = '¡Buen trabajo! Gira de nuevo para el siguiente turno.';
+  wrap.appendChild(txt);
+
+  var bNuevo = mkBtn('rbtn-girar', SVG_GIRAR + ' Girar de nuevo', 'r-btn-nuevo');
+  bNuevo.addEventListener('click', girar);
+  wrap.appendChild(bNuevo);
+
+  dyn.appendChild(wrap);
+}
+
+/* ─── RESULTADO ─── */
+function mostrarResultado(idx) {
+  var s = SLOTS[idx];
+  /* header */
+  document.getElementById('r-slot-emoji').innerHTML = svgIcon(s.id, 44, s.color);
+
+  var nameEl = document.getElementById('r-slot-name');
+  nameEl.textContent  = s.label;
+  nameEl.setAttribute('style', 'font-family:' + s.font + ';color:' + s.color + ';line-height:1.1;' + s.nameStyle);
+
+  var descEl = document.getElementById('r-slot-desc');
+  descEl.textContent = s.desc;
+  descEl.style.color = 'rgba(255,255,255,0.6)';
+
+  /* card background */
+  var card = document.getElementById('r-card');
+  card.style.background = s.cardBg;
+  card.style.borderColor = s.cardBorder;
+  pararTimer(); modoDoble = false; puedeCambiar = false;
+
+  var dyn = document.getElementById('r-dyn');
+  dyn.innerHTML = '';
+
+  function mkPerdido(slotId, titulo, desc, btnTxt) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:8px 0;';
+    var em = document.createElement('div'); em.style.cssText = 'display:flex;align-items:center;justify-content:center;'; em.innerHTML = svgIcon(slotId, 56, s.color);
+    var tit = document.createElement('span'); tit.style.cssText = 'font-family:"Plus Jakarta Sans",Inter,sans-serif;font-size:24px;font-weight:800;color:#ffffff;display:block;'; tit.textContent = titulo;
+    var p = document.createElement('span'); p.style.cssText = 'font-size:14px;color:#c8dce8;display:block;'; p.textContent = desc;
+    var btnWrap = document.createElement('div'); btnWrap.style.cssText = 'display:flex;justify-content:center;margin-top:8px;';
+    var btn = mkBtn('rbtn-girar', SVG_GIRAR + ' ' + btnTxt);
+    btn.addEventListener('click', girar);
+    btnWrap.appendChild(btn);
+    wrap.appendChild(em); wrap.appendChild(tit); wrap.appendChild(p); wrap.appendChild(btnWrap);
+    dyn.appendChild(wrap);
+  }
+
+  if (s.id === 'posturno') {
+    mkPerdido('posturno', '¡Posturno!', 'Giras otra vez sin parar.', 'Girar de nuevo');
+  } else if (s.id === 'critico') {
+    mkPerdido('critico', 'Paciente Crítico', 'Pierdes tu turno. El siguiente jugador continúa.', 'Siguiente turno');
+  } else if (s.id === 'doctor') {
+    renderQ(elegir(false), { pista: true });
+  } else if (s.id === 'mortal') {
+    renderQ(elegir(true), {});
+  } else if (s.id === 'guardia') {
+    modoDoble = true; renderQ(elegir(false), {});
+  } else if (s.id === 'emergencia') {
+    renderQ(elegir(false), { timer: true });
+  } else if (s.id === 'consentimiento') {
+    puedeCambiar = true; renderQ(elegir(false), { cambiar: true });
+  }
+
+  cardEl.classList.remove('oculto');
+  cardEl.classList.add('visible');
+}
+
+})(); // IIFE
+</script>
+
+<!-- LOTTIE MASCOTA -->
+<script>
+import lottie from 'lottie-web';
+const base = import.meta.env.BASE_URL;
+lottie.loadAnimation({
+  container: document.getElementById('r-mascot') as HTMLElement,
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: base + 'HomeMole.json',
+});
+</script>
+
+</Layout>
