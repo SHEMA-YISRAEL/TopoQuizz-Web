@@ -1,0 +1,959 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Trivia Buzz — TopoQuizz" description="Modo competencia multijugador de trivia médica.">
+
+<style is:global>
+  body {
+    background: linear-gradient(135deg, #1a2535 0%, #283143 50%, #1e3a5f 100%) !important;
+    min-height: 100vh;
+  }
+
+  /* ── BOTONES GLOBALES ── */
+  .tbtn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 24px; border-radius: 16px;
+    font-family: "Plus Jakarta Sans", Inter, sans-serif;
+    font-weight: 700; font-size: 14px; letter-spacing: 0.3px;
+    cursor: pointer; border: none;
+    transition: transform 0.18s cubic-bezier(.34,1.56,.64,1), box-shadow 0.18s, background 0.18s;
+  }
+  .tbtn:hover:not(:disabled) { transform: translateY(-3px); }
+  .tbtn:active:not(:disabled) { transform: translateY(-1px) scale(0.98); }
+  .tbtn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
+
+  .tbtn-primary {
+    background: linear-gradient(135deg, #6e96c3 0%, #4d7bae 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(78,123,174,0.4);
+  }
+  .tbtn-primary:hover:not(:disabled) { box-shadow: 0 8px 24px rgba(78,123,174,0.6); }
+
+  .tbtn-ok {
+    background: linear-gradient(135deg, #a3ccb0 0%, #72b088 100%);
+    color: #1a2f22 !important;
+    box-shadow: 0 4px 14px rgba(114,176,136,0.35);
+  }
+  .tbtn-ok:hover:not(:disabled) { box-shadow: 0 8px 24px rgba(114,176,136,0.55); }
+
+  .tbtn-danger {
+    background: linear-gradient(135deg, #f28b82 0%, #d05a50 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(210,90,80,0.4);
+  }
+  .tbtn-danger:hover:not(:disabled) { box-shadow: 0 8px 24px rgba(210,90,80,0.6); }
+
+  .tbtn-ghost {
+    background: rgba(255,255,255,0.08); color: #e0ecf4 !important;
+    border: 1.5px solid rgba(255,255,255,0.18) !important;
+  }
+  .tbtn-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.15); }
+
+  /* ── HEADER ── */
+  .t-header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--white);
+    box-shadow: 0 2px 16px rgba(40,49,67,0.06);
+  }
+  .t-header-inner {
+    max-width: 1280px; margin: 0 auto;
+    padding: 0 80px; height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .t-logo {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 800; font-size: 20px;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .t-logo img { width: 40px; height: 40px; border-radius: 10px; object-fit: contain; }
+  .t-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(163,204,176,0.15); color: #2e7d52;
+    padding: 6px 16px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+  }
+
+  /* ── SCREENS ── */
+  .t-screen {
+    max-width: 700px; margin: 0 auto;
+    padding: 48px 24px 80px;
+    display: none; flex-direction: column; align-items: center; gap: 32px;
+  }
+  .t-screen.active { display: flex; }
+
+  /* ── SETUP ── */
+  .t-setup-card {
+    width: 100%; background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 28px; padding: 40px 36px;
+    display: flex; flex-direction: column; gap: 28px;
+  }
+  .t-setup-title {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 32px; font-weight: 800; color: #ffffff;
+    text-align: center; line-height: 1.1;
+  }
+  .t-setup-sub {
+    color: rgba(168,198,221,0.8); font-size: 14px;
+    text-align: center; line-height: 1.6; margin-top: 8px;
+  }
+  .t-n-selector {
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+  }
+  .t-n-label {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 15px; font-weight: 600; color: #a8c6dd;
+  }
+  .t-n-btns { display: flex; gap: 8px; }
+  .t-n-btn {
+    width: 44px; height: 44px; border-radius: 12px;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 16px; font-weight: 700;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    color: #a8c6dd; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .t-n-btn.sel {
+    background: linear-gradient(135deg, #6e96c3, #4d7bae);
+    border-color: transparent; color: #ffffff;
+    box-shadow: 0 4px 14px rgba(78,123,174,0.45);
+  }
+  .t-players-grid { display: flex; flex-direction: column; gap: 12px; }
+  .t-player-row {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .t-player-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; flex-shrink: 0;
+    color: #1a2535;
+  }
+  .t-player-input {
+    flex: 1; padding: 12px 16px; border-radius: 12px;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    color: #ffffff; font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 14px; font-weight: 600; outline: none;
+    transition: border-color 0.15s;
+  }
+  .t-player-input:focus { border-color: rgba(110,150,195,0.6); }
+  .t-player-input::placeholder { color: rgba(168,198,221,0.4); }
+
+  /* ── SCOREBOARD LATERAL ── */
+  .t-game-layout {
+    width: 100%; display: flex; flex-direction: column; gap: 24px;
+  }
+  .t-scoreboard {
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  }
+  .t-score-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border-radius: 20px;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 13px; font-weight: 700; color: #a8c6dd;
+    transition: all 0.2s;
+  }
+  .t-score-chip.active-player {
+    border-color: rgba(232,200,64,0.6);
+    background: rgba(232,200,64,0.12);
+    color: #e8c840;
+    box-shadow: 0 0 16px rgba(232,200,64,0.2);
+  }
+  .t-score-chip .pts {
+    background: rgba(255,255,255,0.12);
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 12px;
+  }
+  .t-score-chip.active-player .pts {
+    background: rgba(232,200,64,0.25);
+  }
+
+  /* ── PREGUNTA CARD ── */
+  .t-q-card {
+    width: 100%; background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 28px; padding: 36px 32px;
+    display: flex; flex-direction: column; gap: 20px;
+    backdrop-filter: blur(20px);
+  }
+  .t-q-meta {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .t-tag {
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .t-tag-farm  { background: rgba(110,150,195,0.2); color: #a8c6dd; }
+  .t-tag-anat  { background: rgba(163,204,176,0.2); color: #a3ccb0; }
+  .t-tag-dific { background: rgba(242,139,130,0.2); color: #f28b82; }
+  .t-q-num {
+    margin-left: auto;
+    font-size: 12px; font-weight: 700; color: rgba(168,198,221,0.5);
+    letter-spacing: 0.5px;
+  }
+  .t-q-text {
+    font-size: 18px; line-height: 1.75; color: #ffffff; font-weight: 600;
+  }
+  .t-resp-box {
+    display: none;
+    background: rgba(163,204,176,0.08);
+    border: 1px solid rgba(163,204,176,0.22);
+    border-radius: 14px; padding: 18px 22px;
+    font-size: 14px; line-height: 1.7; color: #a8c6dd;
+  }
+  .t-resp-box.show { display: block; }
+  .t-resp-label {
+    display: block; color: #a3ccb0;
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  /* ── BUZZ BUTTON ── */
+  .t-buzz-wrap {
+    width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .t-buzz-hint {
+    font-size: 13px; color: rgba(168,198,221,0.6);
+    font-weight: 600; letter-spacing: 0.5px;
+  }
+  .t-buzz-btn {
+    width: 220px; height: 220px; border-radius: 50%;
+    background: linear-gradient(135deg, #e8c840 0%, #c9a520 100%);
+    border: none; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 8px 40px rgba(232,200,64,0.45), 0 0 0 8px rgba(232,200,64,0.1), 0 0 0 16px rgba(232,200,64,0.05);
+    transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), box-shadow 0.15s;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 800; font-size: 22px; color: #1a2535;
+    letter-spacing: 1px;
+    user-select: none;
+  }
+  .t-buzz-btn:hover:not(:disabled) {
+    transform: scale(1.07);
+    box-shadow: 0 12px 56px rgba(232,200,64,0.6), 0 0 0 10px rgba(232,200,64,0.12), 0 0 0 20px rgba(232,200,64,0.06);
+  }
+  .t-buzz-btn:active:not(:disabled) { transform: scale(0.96); }
+  .t-buzz-btn:disabled {
+    background: rgba(255,255,255,0.08);
+    color: rgba(168,198,221,0.3);
+    box-shadow: none; cursor: not-allowed;
+  }
+  .t-buzz-icon { font-size: 40px; line-height: 1; }
+
+  /* ── BUZZ STATE — quién buzzeó ── */
+  .t-buzzed-banner {
+    display: none; width: 100%;
+    border-radius: 20px; padding: 20px 28px;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 18px; font-weight: 800; text-align: center;
+    animation: tPop 0.3s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .t-buzzed-banner.show { display: block; }
+  .t-buzzed-name { font-size: 26px; display: block; margin-top: 4px; }
+
+  /* ── ACCIONES POST-BUZZ ── */
+  .t-post-actions {
+    display: none; flex-direction: column; align-items: center; gap: 12px; width: 100%;
+  }
+  .t-post-actions.show { display: flex; }
+  .t-post-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+  /* ── PASO A OTRO JUGADOR ── */
+  .t-pase-info {
+    display: none;
+    background: rgba(242,139,130,0.1);
+    border: 1px solid rgba(242,139,130,0.25);
+    border-radius: 14px; padding: 14px 20px;
+    font-size: 14px; color: #f28b82; font-weight: 600;
+    text-align: center; width: 100%;
+  }
+  .t-pase-info.show { display: block; }
+
+  /* ── FIN DE JUEGO ── */
+  .t-fin-card {
+    width: 100%; background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 28px; padding: 40px 32px;
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+    text-align: center;
+  }
+  .t-fin-trophy { font-size: 72px; line-height: 1; }
+  .t-fin-title {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 28px; font-weight: 800; color: #ffffff;
+  }
+  .t-fin-podio { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+  .t-fin-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px; border-radius: 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .t-fin-row.ganador {
+    background: rgba(232,200,64,0.12);
+    border-color: rgba(232,200,64,0.35);
+  }
+  .t-fin-pos {
+    font-size: 20px; font-weight: 800; color: #e8c840;
+    width: 28px; text-align: center;
+  }
+  .t-fin-nombre {
+    flex: 1; font-weight: 700; font-size: 15px; color: #ffffff;
+    text-align: left;
+  }
+  .t-fin-pts {
+    font-weight: 800; font-size: 18px; color: #a3ccb0;
+  }
+
+  /* ── CONTINUAR ── */
+  .t-continuar-wrap {
+    display: none; justify-content: center; width: 100%; margin-top: 4px;
+    animation: tFadeUp 0.3s ease both;
+  }
+  .t-continuar-wrap.show { display: flex; }
+
+  /* ── CORRECTO FLASH ── */
+  .t-q-card.correcto {
+    border-color: rgba(163,204,176,0.6) !important;
+    background: rgba(163,204,176,0.08) !important;
+    animation: tCorrectoPulse 0.5s ease both;
+  }
+  .t-q-card.incorrecto {
+    border-color: rgba(242,139,130,0.6) !important;
+    animation: tShake 0.4s ease both;
+  }
+
+  /* ── SCORE BOUNCE ── */
+  .t-score-chip.bounce { animation: tBounce 0.4s cubic-bezier(.34,1.56,.64,1) both; }
+
+  /* ── BUZZ PULSO ── */
+  .t-buzz-btn.idle {
+    animation: tBuzzPulse 2s ease-in-out infinite;
+  }
+
+  /* ── FIN GANADOR ── */
+  .t-fin-ganador-name {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 40px; font-weight: 800;
+    animation: tZoomIn 0.6s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .t-fin-card { animation: tFadeUp 0.5s ease both; }
+  #t-fin-confetti {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 999;
+  }
+
+  /* ── KEYFRAMES ── */
+  @keyframes tPop {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes tFadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes tCorrectoPulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+  @keyframes tShake {
+    0%,100% { transform: translateX(0); }
+    20%     { transform: translateX(-8px); }
+    40%     { transform: translateX(8px); }
+    60%     { transform: translateX(-5px); }
+    80%     { transform: translateX(5px); }
+  }
+  @keyframes tBounce {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.18); }
+    100% { transform: scale(1); }
+  }
+  @keyframes tBuzzPulse {
+    0%,100% { box-shadow: 0 8px 40px rgba(232,200,64,0.45), 0 0 0 8px rgba(232,200,64,0.1), 0 0 0 16px rgba(232,200,64,0.05); }
+    50%     { box-shadow: 0 8px 40px rgba(232,200,64,0.7), 0 0 0 14px rgba(232,200,64,0.18), 0 0 0 26px rgba(232,200,64,0.08); }
+  }
+  @keyframes tZoomIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .t-header-inner { padding: 0 20px; }
+    .t-screen { padding: 28px 16px 60px; }
+    .t-setup-card, .t-q-card { padding: 28px 20px; }
+    .t-buzz-btn { width: 180px; height: 180px; font-size: 18px; }
+    .t-buzz-icon { font-size: 32px; }
+    .t-q-text { font-size: 16px; }
+  }
+</style>
+
+<!-- CONFETTI CANVAS -->
+<canvas id="t-fin-confetti"></canvas>
+
+<!-- HEADER -->
+<header class="t-header">
+  <div class="t-header-inner">
+    <a href="/" class="t-logo">
+      <img src="/logoTopoQuizz.png" alt="TopoQuizz" />
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:var(--navy);white-space:nowrap;"><span style="color:var(--red)">Topo</span><span style="color:var(--green)">Quizz</span></span>
+    </a>
+    <span class="t-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Trivia Buzz
+    </span>
+  </div>
+</header>
+
+<!-- PANTALLA 1: SETUP -->
+<div class="t-screen active" id="t-setup">
+  <div class="t-setup-card">
+    <div style="text-align:center;">
+      <div style="font-size:56px;line-height:1;margin-bottom:12px;">⚡</div>
+      <div class="t-setup-title">Trivia Buzz</div>
+      <p class="t-setup-sub">El primero en presionar el botón responde.<br/>Si falla, pasa al siguiente jugador.</p>
+    </div>
+
+    <div class="t-n-selector">
+      <span class="t-n-label">Jugadores:</span>
+      <div class="t-n-btns" id="t-n-btns">
+        <button class="t-n-btn" data-n="2">2</button>
+        <button class="t-n-btn sel" data-n="3">3</button>
+        <button class="t-n-btn" data-n="4">4</button>
+        <button class="t-n-btn" data-n="5">5</button>
+        <button class="t-n-btn" data-n="6">6</button>
+      </div>
+    </div>
+
+    <div class="t-players-grid" id="t-players-grid"></div>
+
+    <div style="display:flex;justify-content:center;">
+      <button class="tbtn tbtn-primary" id="t-start-btn" style="padding:15px 52px;font-size:16px;border-radius:24px;box-shadow:0 4px 20px rgba(78,123,174,0.5);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Comenzar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PANTALLA 2: JUEGO -->
+<div class="t-screen" id="t-game">
+  <div class="t-game-layout">
+
+    <!-- Scoreboard -->
+    <div class="t-scoreboard" id="t-scoreboard"></div>
+
+    <!-- Pregunta -->
+    <div class="t-q-card" id="t-q-card">
+      <div class="t-q-meta" id="t-q-meta"></div>
+      <div class="t-q-text" id="t-q-text"></div>
+      <div class="t-resp-box" id="t-resp-box">
+        <span class="t-resp-label">Respuesta</span>
+        <span id="t-resp-text"></span>
+      </div>
+    </div>
+
+    <!-- Banner "buzzeó X" -->
+    <div class="t-buzzed-banner" id="t-buzzed-banner"></div>
+
+    <!-- Info de pase -->
+    <div class="t-pase-info" id="t-pase-info"></div>
+
+    <!-- Botón Buzz -->
+    <div class="t-buzz-wrap" id="t-buzz-wrap">
+      <span class="t-buzz-hint">¡Presiona para responder!</span>
+      <button class="t-buzz-btn" id="t-buzz-btn">
+        <span class="t-buzz-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </span>
+        BUZZ
+      </button>
+    </div>
+
+    <!-- Selección de quién buzzeó -->
+    <div id="t-quien-buzz" style="display:none;flex-direction:column;align-items:center;gap:14px;width:100%;">
+      <div style="font-size:14px;font-weight:700;color:rgba(168,198,221,0.7);letter-spacing:0.5px;">¿Quién presionó primero?</div>
+      <div id="t-quien-btns" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"></div>
+    </div>
+
+    <!-- Botón continuar -->
+    <div class="t-continuar-wrap" id="t-continuar-wrap">
+      <button class="tbtn tbtn-primary" id="t-btn-continuar" style="padding:14px 48px;font-size:15px;border-radius:24px;box-shadow:0 4px 20px rgba(78,123,174,0.5);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        Continuar
+      </button>
+    </div>
+
+    <!-- Acciones post-buzz -->
+    <div class="t-post-actions" id="t-post-actions">
+      <div style="font-size:13px;color:rgba(168,198,221,0.6);font-weight:600;">¿Respondió correctamente?</div>
+      <div class="t-post-btns">
+        <button class="tbtn tbtn-ok" id="t-btn-correcto">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Correcto
+        </button>
+        <button class="tbtn tbtn-danger" id="t-btn-incorrecto">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Incorrecto
+        </button>
+      </div>
+      <button class="tbtn tbtn-ghost" id="t-btn-ver-resp" style="margin-top:4px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Ver respuesta
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- PANTALLA 3: FIN -->
+<div class="t-screen" id="t-fin">
+  <div class="t-fin-card">
+    <div class="t-fin-trophy" id="t-fin-trophy">🏆</div>
+    <div class="t-fin-title">¡Tenemos ganador!</div>
+    <div class="t-fin-ganador-name" id="t-fin-ganador-name"></div>
+    <div class="t-fin-podio" id="t-fin-podio"></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+      <button class="tbtn tbtn-primary" id="t-btn-rejugar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M3 12l-2-2m2 2 2-2"/></svg>
+        Jugar de nuevo
+      </button>
+      <button class="tbtn tbtn-ghost" id="t-btn-setup">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Cambiar jugadores
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+(function() {
+
+var PREGUNTAS = [
+  { cat:"Farmacología", texto:"¿Cuál es el mecanismo de acción de los antagonistas de los receptores de angiotensina II (losartán)?", resp:"Bloquean selectivamente los receptores AT1 de la angiotensina II, inhibiendo la vasoconstricción, la secreción de aldosterona, la retención de sodio y agua, y el remodelado cardiovascular.", dificil:false },
+  { cat:"Farmacología", texto:"Menciona 3 fármacos bloqueadores de canales de Ca tipo L.", resp:"Amlodipino, nicardipino, nifedipino, nimodipino.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el mecanismo de acción del ibuprofeno?", resp:"Inhibe de forma reversible y no selectiva las enzimas COX-1 y COX-2, bloqueando la síntesis de prostaglandinas y tromboxanos.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el efecto adverso más común de los IECA?", resp:"La tos seca. Los IECA inhiben la degradación de la bradicinina, provocando su acumulación en las vías respiratorias.", dificil:false },
+  { cat:"Farmacología", texto:"Mencione 3 diuréticos de asa y 3 diuréticos tiazídicos.", resp:"Asa: furosemida, torasemida, bumetanida. Tiazídicos: hidroclorotiazida, clortalidona, indapamida.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuáles son los efectos adversos más comunes de los AINEs?", resp:"Gastrointestinales (dispepsia, gastritis, úlceras), renales (retención de líquidos, disfunción renal) y aumento de la presión arterial.", dificil:false },
+  { cat:"Farmacología", texto:"¿A qué familia pertenece la gentamicina y cuál es su mecanismo de acción?", resp:"Aminoglucósidos. Se une irreversiblemente a la subunidad 30S del ribosoma bacteriano, interfiriendo con la síntesis proteica.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el antídoto para la intoxicación por opioides?", resp:"La naloxona. Es antagonista competitivo de receptores opioides mu; revierte la depresión respiratoria y del SNC.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cómo se clasifican las insulinas según su tiempo de acción?", resp:"Ultrarrápida: lispro, aspart, glulisina. Corta: regular. Intermedia: NPH. Prolongada: glargina, detemir, degludec.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el mecanismo de acción de los macrólidos (azitromicina)?", resp:"Se unen reversiblemente a la subunidad 50S del ribosoma bacteriano, bloqueando la translocación e inhibiendo la síntesis proteica.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el esquema de primera línea para tuberculosis pulmonar sensible?", resp:"6 meses: Fase intensiva 2 meses con HRZE (isoniazida, rifampicina, pirazinamida, etambutol). Fase de continuación 4 meses con HR.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el antidiabético oral de primera línea para DM tipo 2 y su efecto adverso más frecuente?", resp:"Metformina. Efecto adverso más común: gastrointestinal (diarrea, náuseas, dolor abdominal).", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el antídoto para revertir sedación profunda por benzodiacepinas?", resp:"El flumazenilo.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuáles son los principales efectos adversos del uso crónico de glucocorticoides?", resp:"Osteoporosis, síndrome de Cushing iatrogénico, inmunosupresión, hiperglucemia, HTA, miopatía, fragilidad cutánea y supresión del eje HHS.", dificil:false },
+  { cat:"Farmacología", texto:"¿Cuál es el mecanismo de acción de los IBP como el omeprazol?", resp:"Inhiben irreversiblemente la bomba H⁺/K⁺ ATPasa en las células parietales gástricas, bloqueando la secreción de HCl.", dificil:false },
+  { cat:"Anatomía", texto:"¿Cuál es el recorrido del sistema de conducción cardíaco?", resp:"Nodo sinusal → vías internodales → nodo AV → haz de His → ramas derecha e izquierda → fibras de Purkinje.", dificil:false },
+  { cat:"Anatomía", texto:"¿Qué arterias conforman el polígono de Willis?", resp:"Cerebrales anteriores, comunicante anterior, segmentos terminales de carótidas internas, comunicantes posteriores e iniciales de cerebrales posteriores.", dificil:false },
+  { cat:"Anatomía", texto:"¿Cuáles son las ramas principales de la arteria carótida externa?", resp:"Tiroidea superior, faríngea ascendente, lingual, facial, occipital, auricular posterior, maxilar y temporal superficial (las 2 últimas son terminales).", dificil:false },
+  { cat:"Anatomía", texto:"¿Qué vasos forman directamente la vena porta hepática?", resp:"La confluencia de la vena mesentérica superior y la vena esplénica, detrás del cuello del páncreas.", dificil:false },
+  { cat:"Anatomía", texto:"¿Dónde desemboca el conducto colédoco?", resp:"En la ampolla hepatopancreática (ampolla de Vater), en la papila duodenal mayor de la 2ª porción del duodeno.", dificil:false },
+  { cat:"Anatomía", texto:"¿Cuál es el recorrido del LCR desde su producción hasta su reabsorción?", resp:"Plexos coroideos → ventrículos laterales → 3er ventrículo → acueducto cerebral → 4to ventrículo → espacio subaracnoideo → granulaciones aracnoideas.", dificil:false },
+  { cat:"Anatomía", texto:"¿Cuáles son los músculos del manguito rotador?", resp:"Supraespinoso, infraespinoso, redondo menor y subescapular.", dificil:false },
+  { cat:"Anatomía", texto:"¿Qué estructuras atraviesan el túnel carpiano?", resp:"El nervio mediano y 9 tendones flexores: 4 del flexor superficial, 4 del flexor profundo y el tendón del flexor largo del pulgar.", dificil:false },
+  { cat:"Anatomía", texto:"¿Cuáles son las tres ramas del tronco celíaco?", resp:"Arteria gástrica izquierda, arteria hepática común y arteria esplénica.", dificil:false },
+  { cat:"Anatomía", texto:"¿En qué bronquio se aloja más frecuentemente un cuerpo extraño aspirado y por qué?", resp:"Bronquio principal derecho: más ancho, más corto y con trayecto más vertical.", dificil:false },
+  { cat:"Difícil", texto:"¿Cuál es el mecanismo fisiopatológico primario de la preeclampsia?", resp:"Invasión trofoblástica insuficiente de arterias espirales → alta resistencia vascular → hipoperfusión placentaria → factores antiangiogénicos → disfunción endotelial sistémica materna.", dificil:true },
+  { cat:"Difícil", texto:"¿Cuáles son los antihipertensivos de elección para la hipertensión en el embarazo?", resp:"Alfa metildopa, labetalol y nifedipino.", dificil:true },
+  { cat:"Difícil", texto:"¿Para qué patología se usan los criterios de Framingham? Menciona criterios mayores y menores.", resp:"Para ICC. Requiere 2 mayores o 1 mayor + 2 menores. Mayores: DPN, ingurgitación yugular, crepitantes, cardiomegalia, EAP, S3, reflujo hepatoyugular. Menores: edema bilateral, tos nocturna, disnea de esfuerzo, hepatomegalia, derrame pleural, taquicardia >120.", dificil:true },
+  { cat:"Difícil", texto:"¿Qué evalúa el test de Apgar, cuándo se aplica y cuáles son sus parámetros?", resp:"Evalúa la adaptación cardiorrespiratoria del RN al 1er y 5to minuto. Parámetros: FC, esfuerzo respiratorio, tono muscular, irritabilidad refleja y coloración.", dificil:true },
+  { cat:"Difícil", texto:"Causas de hemorragia obstétrica clasificadas por mitad del embarazo.", resp:"1ª mitad: aborto, embarazo ectópico, mola hidatidiforme, hemorragia de implantación, patologías del tracto genital. 2ª mitad: placenta previa, abruptio placentae, rotura uterina, vasa previa, tapón mucoso.", dificil:true },
+  { cat:"Difícil", texto:"¿Qué es la tríada de Charcot y qué patología sugiere?", resp:"Fiebre + dolor en hipocondrio derecho + ictericia. Sugiere colangitis aguda.", dificil:true },
+  { cat:"Difícil", texto:"3 diferencias clínicas y de laboratorio entre CAD y EHH.", resp:"1) Déficit insulínico: absoluto en CAD (cetogénesis), relativo en EHH. 2) Ácido-base: CAD con acidosis metabólica pH<7.3, EHH con pH normal sin cetosis. 3) Glucemia/osmolaridad: EHH >600 mg/dL y >320 mOsm/kg.", dificil:true },
+  { cat:"Difícil", texto:"¿En qué consiste la maniobra de Murphy y qué patología sugiere su positividad?", resp:"Palpación profunda del punto cístico durante inspiración profunda. Positiva si el dolor interrumpe bruscamente la inspiración. Sugiere colecistitis aguda.", dificil:true },
+  { cat:"Difícil", texto:"¿Cuál es el fármaco de elección para convulsiones en preeclampsia severa o eclampsia?", resp:"El sulfato de magnesio.", dificil:true },
+  { cat:"Difícil", texto:"¿Qué es la tríada de Beck y qué emergencia cardiovascular sugiere?", resp:"Hipotensión arterial + ingurgitación yugular + ruidos cardíacos apagados. Sugiere taponamiento cardíaco agudo.", dificil:true },
+  { cat:"Difícil", texto:"¿Qué estructura define el límite entre obstrucción intestinal alta y baja?", resp:"El ángulo de Treitz (flexura duodenoyeyunal).", dificil:true },
+  { cat:"Difícil", texto:"¿Qué es la tríada de Whipple?", resp:"Confirma hipoglucemia clínica verdadera: síntomas compatibles + glucosa plasmática baja documentada durante los síntomas + resolución al corregir la glucemia.", dificil:true },
+  { cat:"Difícil", texto:"¿Cuál es el tratamiento de elección para sífilis primaria y secundaria en adultos?", resp:"Penicilina G Benzatínica, dosis única de 2.4 millones UI intramuscular profunda.", dificil:true },
+  { cat:"Difícil", texto:"¿Qué es la tríada de Cushing y qué complicación neurológica sugiere?", resp:"HTA con presión de pulso ensanchada + bradicardia + alteración respiratoria. Sugiere HIC severa con riesgo de herniación cerebral.", dificil:true },
+  { cat:"Difícil", texto:"Diferencias fundamentales entre síndrome nefrótico y síndrome nefrítico.", resp:"Nefrótico: proteinuria >3.5 g/24h, hipoalbuminemia, edema severo, hiperlipidemia. Nefrítico: hematuria con cilindros hemáticos, HTA y deterioro rápido de función renal.", dificil:true },
+];
+
+/* colores por jugador */
+var COLORS = ['#6e96c3','#a3ccb0','#f28b82','#e8c840','#c27bd4','#ff9f7f'];
+
+/* ── ESTADO ── */
+var jugadores    = [];
+var poolLibres   = [];
+var pregActual   = null;
+var buzzeador    = -1;
+var intentados   = [];
+var numJug       = 3;
+var pregContador = 0;
+var PTS_GANAR    = 5;
+var confettiAnim = null;
+
+/* ── SETUP ── */
+var nBtns = document.getElementById('t-n-btns');
+nBtns.querySelectorAll('.t-n-btn').forEach(function(b) {
+  b.addEventListener('click', function() {
+    numJug = parseInt(this.dataset.n);
+    nBtns.querySelectorAll('.t-n-btn').forEach(function(x){ x.classList.remove('sel'); });
+    this.classList.add('sel');
+    renderInputs();
+  });
+});
+
+function renderInputs() {
+  var grid = document.getElementById('t-players-grid');
+  grid.innerHTML = '';
+  for (var i = 0; i < numJug; i++) {
+    var row = document.createElement('div');
+    row.className = 't-player-row';
+    var av = document.createElement('div');
+    av.className = 't-player-avatar';
+    av.style.background = COLORS[i];
+    av.textContent = (i + 1);
+    var inp = document.createElement('input');
+    inp.className = 't-player-input';
+    inp.type = 'text';
+    inp.placeholder = 'Jugador ' + (i + 1);
+    inp.maxLength = 20;
+    inp.dataset.idx = i;
+    row.appendChild(av);
+    row.appendChild(inp);
+    grid.appendChild(row);
+  }
+}
+
+renderInputs();
+
+document.getElementById('t-start-btn').addEventListener('click', function() {
+  var inputs = document.querySelectorAll('.t-player-input');
+  jugadores = [];
+  inputs.forEach(function(inp, i) {
+    jugadores.push({ nombre: inp.value.trim() || ('Jugador ' + (i + 1)), puntos: 0 });
+  });
+  iniciarJuego();
+});
+
+/* ── JUEGO ── */
+function iniciarJuego() {
+  pararConfetti();
+  poolLibres = PREGUNTAS.slice().sort(function(){ return Math.random() - 0.5; });
+  pregContador = 0;
+  jugadores.forEach(function(j){ j.puntos = 0; });
+  mostrarPantalla('t-game');
+  renderScoreboard(-1);
+  siguientePregunta();
+}
+
+function siguientePregunta() {
+  if (poolLibres.length === 0) poolLibres = PREGUNTAS.slice().sort(function(){ return Math.random() - 0.5; });
+  pregActual  = poolLibres.pop();
+  pregContador++;
+  intentados  = [];
+  buzzeador   = -1;
+
+  var card = document.getElementById('t-q-card');
+  card.classList.remove('correcto', 'incorrecto');
+
+  var meta = document.getElementById('t-q-meta');
+  var tagCls = pregActual.dificil ? 't-tag-dific' : (pregActual.cat === 'Farmacología' ? 't-tag-farm' : 't-tag-anat');
+  var tagTxt = pregActual.dificil ? 'Difícil' : pregActual.cat;
+  meta.innerHTML = '<span class="t-tag ' + tagCls + '">' + tagTxt + '</span><span class="t-q-num">Pregunta ' + pregContador + '</span>';
+
+  document.getElementById('t-q-text').textContent = pregActual.texto;
+  document.getElementById('t-resp-box').classList.remove('show');
+  document.getElementById('t-resp-text').textContent = pregActual.resp;
+  document.getElementById('t-buzzed-banner').classList.remove('show');
+  document.getElementById('t-pase-info').classList.remove('show');
+  document.getElementById('t-post-actions').classList.remove('show');
+  document.getElementById('t-continuar-wrap').classList.remove('show');
+
+  activarBuzz();
+  renderScoreboard(-1);
+}
+
+function activarBuzz() {
+  var btn = document.getElementById('t-buzz-btn');
+  btn.disabled = false;
+  btn.classList.add('idle');
+  document.getElementById('t-buzz-wrap').style.display = 'flex';
+  document.getElementById('t-buzzed-banner').classList.remove('show');
+  document.getElementById('t-post-actions').classList.remove('show');
+  document.getElementById('t-pase-info').classList.remove('show');
+  document.getElementById('t-continuar-wrap').classList.remove('show');
+  document.getElementById('t-quien-buzz').style.display = 'none';
+}
+
+document.getElementById('t-buzz-btn').addEventListener('click', function() {
+  if (this.disabled) return;
+
+  /* si ya todos intentaron → revelar y pasar */
+  if (intentados.length >= jugadores.length) {
+    revelarYSiguiente();
+    return;
+  }
+
+  this.disabled = true;
+  document.getElementById('t-buzz-wrap').style.display = 'none';
+
+  /* mostrar botones de selección de jugador */
+  var disponibles = [];
+  for (var i = 0; i < jugadores.length; i++) {
+    if (intentados.indexOf(i) === -1) disponibles.push(i);
+  }
+
+  var quienWrap = document.getElementById('t-quien-buzz');
+  var quienBtns = document.getElementById('t-quien-btns');
+  quienBtns.innerHTML = '';
+
+  disponibles.forEach(function(idx) {
+    var b = document.createElement('button');
+    b.className = 'tbtn';
+    b.style.cssText = 'background:rgba(' + hexToRgb(COLORS[idx]) + ',0.15);color:' + COLORS[idx] + ';border:1.5px solid rgba(' + hexToRgb(COLORS[idx]) + ',0.4);padding:12px 22px;font-size:15px;border-radius:16px;';
+    b.innerHTML = '<span style="width:10px;height:10px;border-radius:50%;background:' + COLORS[idx] + ';display:inline-block;flex-shrink:0;"></span> ' + jugadores[idx].nombre;
+    b.addEventListener('click', function() {
+      quienWrap.style.display = 'none';
+      seleccionarBuzzeador(idx);
+    });
+    quienBtns.appendChild(b);
+  });
+
+  quienWrap.style.display = 'flex';
+});
+
+function seleccionarBuzzeador(idx) {
+  buzzeador = idx;
+  intentados.push(buzzeador);
+
+  /* banner */
+  var banner = document.getElementById('t-buzzed-banner');
+  banner.style.background = 'rgba(' + hexToRgb(COLORS[buzzeador]) + ',0.15)';
+  banner.style.border = '1.5px solid rgba(' + hexToRgb(COLORS[buzzeador]) + ',0.4)';
+  banner.style.color = COLORS[buzzeador];
+  banner.innerHTML = '¡Buzzeó! <span class="t-buzzed-name">' + jugadores[buzzeador].nombre + '</span>';
+  banner.classList.add('show');
+
+  document.getElementById('t-post-actions').classList.add('show');
+  renderScoreboard(buzzeador);
+}
+
+document.getElementById('t-btn-correcto').addEventListener('click', function() {
+  jugadores[buzzeador].puntos++;
+  document.getElementById('t-resp-box').classList.add('show');
+  document.getElementById('t-post-actions').classList.remove('show');
+
+  /* flash verde en la card */
+  var card = document.getElementById('t-q-card');
+  card.classList.remove('incorrecto');
+  card.classList.add('correcto');
+
+  renderScoreboard(buzzeador);
+
+  /* bounce en el chip del jugador (después de renderizar) */
+  var chips = document.getElementById('t-scoreboard').querySelectorAll('.t-score-chip');
+  if (chips[buzzeador]) {
+    chips[buzzeador].classList.add('bounce');
+  }
+
+  /* comprobar ganador */
+  if (jugadores[buzzeador].puntos >= PTS_GANAR) {
+    setTimeout(function() { mostrarFin(buzzeador); }, 900);
+  } else {
+    document.getElementById('t-continuar-wrap').classList.add('show');
+  }
+});
+
+document.getElementById('t-btn-incorrecto').addEventListener('click', function() {
+  document.getElementById('t-post-actions').classList.remove('show');
+
+  /* sacudir la card */
+  var card = document.getElementById('t-q-card');
+  card.classList.remove('correcto', 'incorrecto');
+  void card.offsetWidth;
+  card.classList.add('incorrecto');
+
+  /* ¿quedan jugadores sin intentar? */
+  var sinIntentar = jugadores.length - intentados.length;
+  if (sinIntentar > 0) {
+    var pase = document.getElementById('t-pase-info');
+    pase.textContent = '❌ Incorrecto — pasa al siguiente jugador (' + sinIntentar + ' restante' + (sinIntentar > 1 ? 's' : '') + ')';
+    pase.classList.add('show');
+    document.getElementById('t-buzz-wrap').style.display = 'flex';
+    document.getElementById('t-buzz-btn').disabled = false;
+    document.getElementById('t-buzzed-banner').classList.remove('show');
+    renderScoreboard(-1);
+  } else {
+    revelarYSiguiente();
+  }
+});
+
+document.getElementById('t-btn-ver-resp').addEventListener('click', function() {
+  document.getElementById('t-resp-box').classList.add('show');
+});
+
+function revelarYSiguiente() {
+  document.getElementById('t-resp-box').classList.add('show');
+  document.getElementById('t-post-actions').classList.remove('show');
+  document.getElementById('t-buzz-wrap').style.display = 'none';
+  var pase = document.getElementById('t-pase-info');
+  pase.textContent = 'Nadie respondió correctamente — revisa la respuesta.';
+  pase.classList.add('show');
+  renderScoreboard(-1);
+  document.getElementById('t-continuar-wrap').classList.add('show');
+}
+
+document.getElementById('t-btn-continuar').addEventListener('click', function() {
+  siguientePregunta();
+});
+
+/* ── SCOREBOARD ── */
+function renderScoreboard(activo) {
+  var sb = document.getElementById('t-scoreboard');
+  sb.innerHTML = '';
+  var sorted = jugadores.slice().sort(function(a,b){ return b.puntos - a.puntos; });
+  jugadores.forEach(function(j, i) {
+    var chip = document.createElement('div');
+    chip.className = 't-score-chip' + (i === activo ? ' active-player' : '');
+    chip.style.borderColor = i === activo ? '' : 'rgba(' + hexToRgb(COLORS[i]) + ',0.3)';
+    chip.innerHTML =
+      '<span style="width:10px;height:10px;border-radius:50%;background:' + COLORS[i] + ';flex-shrink:0;display:inline-block;"></span>' +
+      j.nombre +
+      '<span class="pts">' + j.puntos + ' pt' + (j.puntos !== 1 ? 's' : '') + '</span>';
+    sb.appendChild(chip);
+  });
+}
+
+/* ── FIN ── */
+function mostrarFin(ganadorIdx) {
+  mostrarPantalla('t-fin');
+
+  var ganador = jugadores[ganadorIdx];
+  var color   = COLORS[ganadorIdx];
+
+  var nameEl = document.getElementById('t-fin-ganador-name');
+  nameEl.textContent = ganador.nombre;
+  nameEl.style.color = color;
+  nameEl.style.textShadow = '0 0 32px rgba(' + hexToRgb(color) + ',0.6)';
+
+  var sorted = jugadores.slice().sort(function(a,b){ return b.puntos - a.puntos; });
+  var podio = document.getElementById('t-fin-podio');
+  podio.innerHTML = '';
+  var medals = ['🥇','🥈','🥉'];
+  sorted.forEach(function(j, i) {
+    var originalIdx = jugadores.indexOf(j);
+    var row = document.createElement('div');
+    row.className = 't-fin-row' + (i === 0 ? ' ganador' : '');
+    row.innerHTML =
+      '<span class="t-fin-pos">' + (medals[i] || (i+1)+'°') + '</span>' +
+      '<span style="width:12px;height:12px;border-radius:50%;background:' + COLORS[originalIdx] + ';flex-shrink:0;display:inline-block;"></span>' +
+      '<span class="t-fin-nombre">' + j.nombre + '</span>' +
+      '<span class="t-fin-pts">' + j.puntos + ' pts</span>';
+    podio.appendChild(row);
+  });
+
+  iniciarConfetti();
+}
+
+/* ── CONFETTI ── */
+function iniciarConfetti() {
+  var canvas = document.getElementById('t-fin-confetti');
+  var ctx    = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  var particles = [];
+  var COLORS_CONF = ['#e8c840','#6e96c3','#a3ccb0','#f28b82','#c27bd4','#ff9f7f','#ffffff'];
+
+  for (var i = 0; i < 160; i++) {
+    particles.push({
+      x:     Math.random() * canvas.width,
+      y:     Math.random() * canvas.height - canvas.height,
+      w:     6 + Math.random() * 8,
+      h:     10 + Math.random() * 6,
+      color: COLORS_CONF[Math.floor(Math.random() * COLORS_CONF.length)],
+      rot:   Math.random() * Math.PI * 2,
+      rotV:  (Math.random() - 0.5) * 0.12,
+      vx:    (Math.random() - 0.5) * 2.5,
+      vy:    2 + Math.random() * 3.5,
+      alpha: 0.85 + Math.random() * 0.15
+    });
+  }
+
+  var startTime = Date.now();
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var elapsed = Date.now() - startTime;
+    var fadeStart = 3000;
+    var fadeEnd   = 5000;
+
+    particles.forEach(function(p) {
+      p.y   += p.vy;
+      p.x   += p.vx;
+      p.rot += p.rotV;
+      if (p.y > canvas.height + 20) { p.y = -20; p.x = Math.random() * canvas.width; }
+
+      var alpha = p.alpha;
+      if (elapsed > fadeStart) {
+        alpha *= Math.max(0, 1 - (elapsed - fadeStart) / (fadeEnd - fadeStart));
+      }
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    if (elapsed < fadeEnd) {
+      confettiAnim = requestAnimationFrame(draw);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confettiAnim = null;
+    }
+  }
+
+  confettiAnim = requestAnimationFrame(draw);
+}
+
+function pararConfetti() {
+  if (confettiAnim) {
+    cancelAnimationFrame(confettiAnim);
+    confettiAnim = null;
+  }
+  var canvas = document.getElementById('t-fin-confetti');
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+document.getElementById('t-btn-rejugar').addEventListener('click', function() {
+  iniciarJuego();
+});
+document.getElementById('t-btn-setup').addEventListener('click', function() {
+  mostrarPantalla('t-setup');
+});
+
+/* ── UTILS ── */
+function mostrarPantalla(id) {
+  document.querySelectorAll('.t-screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+function hexToRgb(hex) {
+  var r = parseInt(hex.slice(1,3),16);
+  var g = parseInt(hex.slice(3,5),16);
+  var b = parseInt(hex.slice(5,7),16);
+  return r + ',' + g + ',' + b;
+}
+
+})();
+</script>
+
+</Layout>
