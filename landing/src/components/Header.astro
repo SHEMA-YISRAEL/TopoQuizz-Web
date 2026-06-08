@@ -1,4 +1,8 @@
 ---
+interface Props {
+  playStoreUrl: string;
+}
+const { playStoreUrl } = Astro.props;
 ---
 
 <header class="header">
@@ -13,6 +17,6 @@
       <a href="#como-funciona">Cómo funciona</a>
       <a href="#descargar">Descargar</a>
     </nav>
-    <a href="#descargar" class="btn-cta">Prueba la App</a>
+    <a href={playStoreUrl} class="btn-cta" target="_blank" rel="noopener noreferrer">Prueba la App</a>
   </div>
 </header>

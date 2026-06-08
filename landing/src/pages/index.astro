@@ -11,11 +11,11 @@ import Download from '../components/Download.astro';
 import Footer from '../components/Footer.astro';
 
 const appStoreUrl = '#';
-const playStoreUrl = '#';
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.topoquizz';
 ---
 
 <Layout>
-  <Header />
+  <Header playStoreUrl={playStoreUrl} />
   <Hero appStoreUrl={appStoreUrl} playStoreUrl={playStoreUrl} />
   <Stats />
   <Features />
