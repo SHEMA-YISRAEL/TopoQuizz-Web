@@ -24,6 +24,17 @@
   --yellow: #fff2a5;
   --yellow-dark: #d1bf5b;
   --white: #ffffff;
+  /* Acentos "cuaderno de anatomía" */
+  --cream: #f6efe6;
+  --bone: #efe6d8;
+  --ink: #2a2622;
+}
+
+/* ── TÍTULOS SERIF EDITORIAL ── */
+.serif {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 html {
@@ -289,16 +300,52 @@ body {
   flex-shrink: 0;
 }
 .hero-left h1 {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Fraunces", Georgia, serif;
   font-size: 60px;
-  font-weight: 800;
-  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
   color: var(--white);
 }
 .hero-sub {
   color: var(--blue-light);
   font-size: 16px;
   line-height: 1.7;
+}
+.hero-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.hero-store-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+.hero-store-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+.ios-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--blue-light);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
 }
 .store-buttons {
   display: flex;
@@ -528,10 +575,11 @@ body {
   color: var(--green);
 }
 .sec-head h2 {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 40px;
-  font-weight: 800;
-  line-height: 1.2;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 42px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
   color: var(--navy);
 }
 .sec-head h2.white {
@@ -698,6 +746,9 @@ body {
   animation:
     slideInRight 0.7s 0.2s ease both,
     floatPhone 4s 1s ease-in-out infinite;
+}
+.hero-right .qd-phone {
+  animation: slideInRight 0.7s 0.2s ease both;
 }
 
 /* Scroll-triggered items */
@@ -918,10 +969,11 @@ body {
   gap: 24px;
 }
 .dl-left h2 {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 44px;
-  font-weight: 800;
-  line-height: 1.2;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 46px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
   color: var(--white);
 }
 .dl-left p {
@@ -1028,6 +1080,10 @@ body {
 .footer-col a:hover {
   color: var(--white);
 }
+.footer-soon {
+  color: var(--teal-dark);
+  font-size: 13px;
+}
 .footer-social {
   display: flex;
   gap: 12px;
@@ -1092,12 +1148,18 @@ body {
   .hero-inner {
     padding: 60px 40px;
     gap: 40px;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+  .hero-left {
+    align-items: center;
   }
   .hero-left h1 {
     font-size: 48px;
   }
-  .hero-right {
-    display: none;
+  .hero-cta-row {
+    justify-content: center;
   }
   .stats-inner {
     padding: 24px 40px;
@@ -1139,6 +1201,14 @@ body {
   }
   .hero-left h1 {
     font-size: 38px;
+  }
+  .hero-right .qd-phone {
+    width: 280px;
+  }
+  .hero-cta-row {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
   }
   .stats-inner {
     padding: 28px 20px;

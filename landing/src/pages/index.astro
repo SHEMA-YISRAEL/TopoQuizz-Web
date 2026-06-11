@@ -2,28 +2,27 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
+import SocialProof from '../components/SocialProof.astro';
 import Stats from '../components/Stats.astro';
 import Features from '../components/Features.astro';
 import Screenshots from '../components/Screenshots.astro';
-import QuizDemo from '../components/QuizDemo.astro';
 import HowItWorks from '../components/HowItWorks.astro';
 import Download from '../components/Download.astro';
 import Footer from '../components/Footer.astro';
 
-const appStoreUrl = '#';
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.topoquizz';
 ---
 
 <Layout>
   <Header playStoreUrl={playStoreUrl} />
-  <Hero appStoreUrl={appStoreUrl} playStoreUrl={playStoreUrl} />
+  <Hero playStoreUrl={playStoreUrl} />
   <Stats />
+  <SocialProof />
   <Features />
   <Screenshots />
-  <QuizDemo />
   <HowItWorks />
-  <Download appStoreUrl={appStoreUrl} playStoreUrl={playStoreUrl} />
-  <Footer appStoreUrl={appStoreUrl} playStoreUrl={playStoreUrl} />
+  <Download playStoreUrl={playStoreUrl} />
+  <Footer playStoreUrl={playStoreUrl} />
 </Layout>
 
 <script>
@@ -36,7 +35,7 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.topoquiz
     });
   }, { threshold: 0.12 });
 
-  const selectors = ['.sec-head', '.feat-card', '.stat', '.step', '.dl-left', '.qr-card'];
+  const selectors = ['.sec-head', '.feat-card', '.stat', '.step', '.dl-left', '.social-card', '.social-empty', '.ss-item'];
   selectors.forEach(sel => {
     document.querySelectorAll(sel).forEach((el, i) => {
       el.classList.add('anim-item');
