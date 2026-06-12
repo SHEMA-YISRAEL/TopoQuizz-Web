@@ -71,17 +71,16 @@ const questions = [
 <section class="hero" id="demo">
   <div class="hero-inner">
     <div class="hero-left">
-      <div class="mascot-lottie" id="mascot-lottie"></div>
-      <div class="badge beta-badge">
-        <span class="badge-dot"></span>
-        Disponible en Google Play
+      <div class="hero-mascot">
+        <div class="energy-halo"></div>
+        <div class="mascot-lottie" id="mascot-lottie"></div>
       </div>
-      <h1>Practicá Medicina jugando</h1>
+      <h1>Practicá Medicina <span class="hero-accent">jugando</span></h1>
       <p class="hero-sub">
         Respondé tu primera pregunta <strong>ahora mismo</strong> — sin registrarte, sin descargar nada. Quizzes reales de <strong>Anatomía</strong> y <strong>Farmacología</strong>.
       </p>
       <div class="hero-cta-row">
-        <a href="#descargar" class="btn-beta">
+        <a href={playStoreUrl} class="btn-energy">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           Descargá la app gratis
         </a>
@@ -105,7 +104,7 @@ const questions = [
 
     <div class="hero-right">
       <div class="qd-phone">
-        <div class="qd-screen" id="quiz-root" data-questions={JSON.stringify(questions)}></div>
+        <div class="qd-screen" id="quiz-root" data-questions={JSON.stringify(questions)} data-base={import.meta.env.BASE_URL}></div>
       </div>
     </div>
   </div>
@@ -163,15 +162,23 @@ const questions = [
     shuffledCorrect = shuffled.findIndex(o => o.original === q.correct);
   }
 
+  // COLORS.DIFFICULTY: 1=fácil #A3CCB0, 2=medio #FFF2A5, 3=difícil #F28B82
   function diffColor(d: string) {
     if (d === 'Difícil') return '#F28B82';
-    if (d === 'Medio') return '#D1BF5B';
+    if (d === 'Medio') return '#FFF2A5';
     return '#A3CCB0';
   }
 
+  // COLORS.DIFFICULTY_TEXT: 1=#F3F8FB, 2=#455C5A, 3=#F3F8FB
+  function diffTextColor(d: string) {
+    if (d === 'Medio') return '#455C5A';
+    return '#F3F8FB';
+  }
+
+  // COLORS.TIMER: ok=#A3CCB0, warn=#D1BF5B, danger=#F28B82
   function timerColor(t: number) {
     if (t > TIMER_MAX * 0.5) return '#A3CCB0';
-    if (t > TIMER_MAX * 0.25) return '#FFF2A5';
+    if (t > TIMER_MAX * 0.25) return '#D1BF5B';
     return '#F28B82';
   }
 
@@ -204,7 +211,7 @@ const questions = [
       updateTimer();
       if (timeLeft <= 0) {
         stopTimer();
-        if (!answered) showFeedback(-1);
+        if (!answered) showTimeout();
       }
     }, 1000);
   }
@@ -255,7 +262,7 @@ const questions = [
         </div>
         <p class="qd-q-text">${q.question}</p>
         <div class="qd-q-footer">
-          <span class="qd-difficulty" style="background:${diffColor(q.difficulty)}">${q.difficulty}</span>
+          <span class="qd-difficulty" style="background:${diffColor(q.difficulty)};color:${diffTextColor(q.difficulty)}">${q.difficulty}</span>
         </div>
       </div>
 
@@ -283,7 +290,34 @@ const questions = [
       });
     });
 
+    root.querySelector<HTMLButtonElement>('.qd-abandon')?.addEventListener('click', () => {
+      stopTimer();
+      renderStart();
+    });
+
     startTimer();
+  }
+
+  function showTimeout() {
+    answered = true;
+    // Resaltar la respuesta correcta sin avanzar
+    root.querySelectorAll<HTMLButtonElement>('.qd-option').forEach(btn => {
+      const idx = Number(btn.dataset.index);
+      if (idx === shuffledCorrect) btn.classList.add('qd-option-correct');
+    });
+    // Mostrar banner de tiempo agotado encima de las opciones
+    const banner = document.createElement('div');
+    banner.className = 'qd-timeout-banner';
+    banner.innerHTML = `
+      <span class="qd-timeout-text">⏰ Tiempo agotado</span>
+      <button class="qd-timeout-btn">Continuar</button>
+    `;
+    root.querySelector('.qd-options')?.after(banner);
+    banner.querySelector('.qd-timeout-btn')?.addEventListener('click', () => {
+      current++;
+      if (current >= questions.length) renderResult();
+      else renderQuestion();
+    });
   }
 
   function showFeedback(selected: number) {
@@ -291,7 +325,6 @@ const questions = [
     stopTimer();
     const q = questions[current];
     const isCorrect = selected === shuffledCorrect;
-    const isTimeout = selected === -1;
 
     if (isCorrect) score++;
 
@@ -311,7 +344,7 @@ const questions = [
     overlay.innerHTML = `
       <div class="qd-feedback-card ${isCorrect ? 'qd-feedback-correct' : 'qd-feedback-wrong'}">
         <div id="feedback-lottie" class="qd-feedback-lottie"></div>
-        <h3 class="qd-feedback-title">${isTimeout ? 'Tiempo agotado' : isCorrect ? '¡Correcto!' : 'Incorrecto'}</h3>
+        <h3 class="qd-feedback-title">${isCorrect ? '¡Correcto!' : 'Incorrecto'}</h3>
         <p class="qd-feedback-explanation">${q.explanation}</p>
         <button class="qd-feedback-btn ${isCorrect ? 'qd-btn-correct' : 'qd-btn-wrong'}">
           Continuar
@@ -379,25 +412,56 @@ const questions = [
 
     lottie.loadAnimation({
       container: root.querySelector('#confetti-lottie') as HTMLElement,
-      renderer: 'svg', loop: true, autoplay: true,
+      renderer: 'svg', loop: false, autoplay: true,
       path: `${import.meta.env.BASE_URL}assets/Confetti.json`,
     });
 
     lottie.loadAnimation({
       container: root.querySelector('#podium-lottie') as HTMLElement,
-      renderer: 'svg', loop: true, autoplay: true,
+      renderer: 'svg', loop: false, autoplay: true,
       path: `${import.meta.env.BASE_URL}assets/Podium.json`,
     });
 
     root.querySelector('.qd-result-retry')?.addEventListener('click', () => {
-      current = 0;
-      score = 0;
-      totalTimeUsed = 0;
+      renderStart();
+    });
+  }
+
+  function renderStart() {
+    stopTimer();
+    current = 0;
+    score = 0;
+    totalTimeUsed = 0;
+
+    const BASE = root.dataset.base ?? '';
+
+    root.innerHTML = `
+      <img src="${BASE}screenshots/init2.png" alt="" class="qd-start-bg" aria-hidden="true" />
+      <div class="qd-start-overlay"></div>
+      <div class="qd-start-spacer"></div>
+
+      <div class="qd-start-card qd-start-z">
+        <div class="qd-start-card-left">
+          <p class="qd-start-quote">"Hoy puedes descubrir algo que no sabías ayer"</p>
+          <button class="qd-start-play-btn">
+            Jugar
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+        </div>
+        <div class="qd-start-trophy">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F28B82" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4a2 2 0 0 1-2-2V5h4"/><path d="M18 9h2a2 2 0 0 0 2-2V5h-4"/><path d="M12 17v4"/><path d="M8 21h8"/><path d="M6 3h12v6a6 6 0 0 1-12 0V3z"/></svg>
+        </div>
+      </div>
+
+      <div class="qd-homeind qd-start-z"></div>
+    `;
+
+    root.querySelector('.qd-start-play-btn')?.addEventListener('click', () => {
       renderQuestion();
     });
   }
 
-  renderQuestion();
+  renderStart();
 </script>
 
 <style>
@@ -408,11 +472,7 @@ const questions = [
     background: #0a0e1a;
     padding: 14px;
     position: relative;
-    box-shadow:
-      0 0 0 1.5px rgba(255,255,255,.13),
-      0 0 0 6px rgba(0,0,0,.7),
-      0 32px 80px rgba(0,0,0,.45),
-      inset 0 0 0 1px rgba(255,255,255,.04);
+    box-shadow: none;
   }
 
   /* Notch */
@@ -439,18 +499,23 @@ const questions = [
     background: #FDF8F3;
     border-radius: 32px;
     overflow: hidden;
-    min-height: 580px;
+    height: 580px;
     position: relative;
     display: flex;
     flex-direction: column;
   }
 
   /* ── QUIZ INTERNALS ── */
+  /* COLORS ref: PRIMARY.950=#283143, PRIMARY.500=#6E96C3, PRIMARY.700=#506EA5
+                 SECONDARY.500=#587472, SECONDARY.700=#3A4B4A
+                 ANSWER.0=#F28B82(wrong), ANSWER.1=#A3CCB0(correct)
+                 BACKGROUND.50=#FDF8F3, TIMER.ok=#A3CCB0, TIMER.warn=#D1BF5B, TIMER.danger=#F28B82 */
+
   :global(.qd-statusbar) {
     display: flex; justify-content: space-between; align-items: center;
     padding: 10px 20px 4px;
     font-size: 12px; font-weight: 700;
-    color: #283143;
+    color: #283143; /* PRIMARY.950 */
   }
   :global(.qd-statusbar-icons) { display: flex; align-items: center; gap: 6px; }
 
@@ -459,12 +524,17 @@ const questions = [
   }
   :global(.qd-abandon) {
     display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(110,150,195,.12); color: #6E96C3;
+    background: rgba(110,150,195,.12); color: #506EA5; /* PRIMARY.700 */
     border: none; border-radius: 20px;
     padding: 6px 14px;
     font-size: 12px; font-weight: 600;
     cursor: pointer;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font);
+    transition: background .15s, color .15s;
+  }
+  :global(.qd-abandon:hover) {
+    background: #6E96C3; /* PRIMARY.500 */
+    color: #283143; /* PRIMARY.950 */
   }
 
   :global(.qd-timer-wrap) {
@@ -476,99 +546,219 @@ const questions = [
   }
   :global(.qd-timer-label) {
     position: absolute;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font);
     font-size: 12px; font-weight: 800;
-    color: #A3CCB0;
+    color: #A3CCB0; /* TIMER.ok */
     transition: color .5s;
   }
 
   :global(.qd-question-card) {
     margin: 0 12px;
-    background: rgba(110,150,195,.18);
+    background: rgba(110,150,195,.18); /* PRIMARY.500 tint */
     border-radius: 18px;
     padding: 14px;
+    flex-shrink: 0;
   }
   :global(.qd-q-header) {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 8px;
   }
   :global(.qd-specialty) {
-    font-size: 10px; font-weight: 700; color: #587472;
+    font-size: 10px; font-weight: 700; color: #587472; /* SECONDARY.500 */
     text-transform: uppercase; letter-spacing: .5px;
   }
   :global(.qd-report) {
     display: inline-flex; align-items: center; gap: 4px;
     background: rgba(255,255,255,.5); border: none; border-radius: 20px;
-    padding: 3px 8px; font-size: 10px; color: #587472;
-    cursor: pointer; font-family: 'Inter', sans-serif;
+    padding: 3px 8px; font-size: 10px; color: #587472; /* SECONDARY.500 */
+    cursor: pointer; font-family: var(--font);
   }
   :global(.qd-q-text) {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font);
     font-size: 13px; font-weight: 600;
-    color: #283143; line-height: 1.5;
+    color: #283143; line-height: 1.5; /* PRIMARY.950 */
     text-align: center; margin-bottom: 10px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
   }
   :global(.qd-q-footer) { display: flex; justify-content: flex-end; margin-bottom: 8px; }
   :global(.qd-difficulty) {
     font-size: 10px; font-weight: 700;
-    color: #fff; padding: 2px 10px; border-radius: 20px;
+    padding: 2px 10px; border-radius: 20px;
   }
-  :global(.qd-difficulty[style*="D1BF5B"]) { color: #283143 !important; }
   :global(.qd-progress-row) {
     display: flex; justify-content: space-between;
-    font-size: 10px; color: #587472;
+    font-size: 10px; color: #587472; /* SECONDARY.500 */
     margin: 8px 12px 4px;
   }
   :global(.qd-progress-bar) {
-    height: 4px; background: #D8E6F0; border-radius: 4px; overflow: hidden;
+    height: 4px; background: #D0E0ED; border-radius: 4px; overflow: hidden; /* PRIMARY.200 */
     margin: 0 12px;
   }
   :global(.qd-progress-fill) {
-    height: 100%; background: #6E96C3; border-radius: 4px;
+    height: 100%; background: #6E96C3; border-radius: 4px; /* PRIMARY.500 */
     transition: width .4s ease;
   }
 
   :global(.qd-options) {
     display: flex; flex-direction: column; gap: 8px;
     padding: 12px 12px 24px;
+    overflow-y: auto;
+    flex: 1;
   }
   :global(.qd-option) {
     display: flex; align-items: center; gap: 10px;
-    background: #fff;
+    background: #F3F8FB; /* PRIMARY.50 — base claro */
     border: 1.5px solid rgba(110,150,195,.3);
     border-radius: 14px;
     padding: 10px 14px;
     cursor: pointer;
-    transition: border-color .15s, background .15s, transform .1s;
+    transition: border-color .15s, background .15s, color .15s, transform .1s;
     text-align: center;
     justify-content: center;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font);
   }
   :global(.qd-option:hover:not(:disabled)) {
+    background: #6E96C3; /* PRIMARY.500 — hover oscuro */
     border-color: #6E96C3;
-    background: rgba(110,150,195,.06);
     transform: translateY(-1px);
   }
+  :global(.qd-option:hover:not(:disabled) .qd-option-text) {
+    color: #283143; /* PRIMARY.950 — texto oscuro sobre fondo azul */
+  }
   :global(.qd-option-text) {
-    font-size: 12px; color: #6E96C3; font-weight: 500; line-height: 1.4;
+    font-size: 12px; color: #506EA5; font-weight: 500; line-height: 1.4; /* PRIMARY.700 */
   }
   :global(.qd-option-correct) {
-    background: rgba(163,204,176,.15) !important;
-    border-color: #A3CCB0 !important;
+    background: rgba(163,204,176,.2) !important; /* ANSWER.1 tint */
+    border-color: #A3CCB0 !important; /* ANSWER.1 */
   }
-  :global(.qd-option-correct .qd-option-text) { color: #3A4B4A; font-weight: 600; }
+  :global(.qd-option-correct .qd-option-text) { color: #3A4B4A; font-weight: 600; } /* SECONDARY.700 */
   :global(.qd-option-wrong) {
-    background: rgba(242,139,130,.1) !important;
-    border-color: #F28B82 !important;
+    background: rgba(242,139,130,.12) !important; /* ANSWER.0 tint */
+    border-color: #F28B82 !important; /* ANSWER.0 */
   }
-  :global(.qd-option-wrong .qd-option-text) { color: #D27067; font-weight: 600; }
+  :global(.qd-option-wrong .qd-option-text) { color: #F28B82; font-weight: 600; } /* ANSWER.0 */
 
   :global(.qd-homeind) { height: 24px; }
+
+  /* ── TIMEOUT BANNER ── */
+  :global(.qd-timeout-banner) {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(242,139,130,.15); /* ANSWER.0 tint */
+    border: 1.5px solid #F28B82; /* ANSWER.0 */
+    border-radius: 14px;
+    margin: 0 12px 12px;
+    padding: 10px 14px;
+    animation: qdFadeIn .2s ease;
+    flex-shrink: 0;
+  }
+  :global(.qd-timeout-text) {
+    font-family: var(--font);
+    font-size: 12px; font-weight: 700; color: #F28B82; /* ANSWER.0 */
+  }
+  :global(.qd-timeout-btn) {
+    background: #F28B82; border: none; border-radius: 10px; /* ANSWER.0 */
+    padding: 6px 14px;
+    font-family: var(--font);
+    font-size: 12px; font-weight: 700; color: #283143; /* PRIMARY.950 */
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  :global(.qd-timeout-btn:hover) { transform: translateY(-1px); }
+
+  /* ── START SCREEN ── */
+
+  /* Imagen cubre toda la pantalla del teléfono */
+  :global(.qd-start-bg) {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center top;
+    display: block;
+    border-radius: 32px;
+  }
+
+  /* Degradado de blur progresivo: transparent arriba → frost abajo */
+  :global(.qd-start-overlay) {
+    position: absolute; inset: 0;
+    border-radius: 32px;
+    z-index: 1;
+    /* Fondo en degradado: solo la parte baja se opacifica */
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 45%,
+      rgba(243,248,251,.5) 62%,
+      rgba(243,248,251,.88) 78%,
+      rgba(243,248,251,.96) 100%
+    );
+  }
+  /* Pseudoelemento con blur que también se desvanece usando máscara */
+  :global(.qd-start-overlay::after) {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 32px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 40%, black 72%);
+    mask-image: linear-gradient(to bottom, transparent 40%, black 72%);
+  }
+
+  /* Todos los elementos de UI van sobre el overlay */
+  :global(.qd-start-z) { position: relative; z-index: 2; }
+
+  /* Empuja el card hasta el fondo */
+  :global(.qd-start-spacer) {
+    flex: 1;
+    position: relative; z-index: 2;
+  }
+
+  /* Card inferior */
+  :global(.qd-start-card) {
+    margin: 0 12px 4px;
+    background: transparent;
+    border: none;
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  :global(.qd-start-card-left) {
+    flex: 1; display: flex; flex-direction: column; gap: 10px;
+  }
+  :global(.qd-start-quote) {
+    font-family: var(--font);
+    font-size: 12px; font-weight: 600; color: #283143; /* PRIMARY.950 */
+    line-height: 1.55; margin: 0;
+  }
+  :global(.qd-start-trophy) { flex-shrink: 0; }
+
+  /* Botón Jugar — base claro, hover oscuro */
+  :global(.qd-start-play-btn) {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #E5ECF4; /* PRIMARY.100 — base claro */
+    color: #506EA5;      /* PRIMARY.700 */
+    border: 1.5px solid rgba(110,150,195,.4);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-family: var(--font);
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    width: fit-content;
+    transition: background .15s, color .15s, border-color .15s, transform .12s;
+  }
+  :global(.qd-start-play-btn:hover) {
+    background: #283143; /* PRIMARY.950 — hover oscuro */
+    color: #D0E0ED;      /* PRIMARY.200 */
+    border-color: #283143;
+    transform: translateY(-1px);
+  }
+  :global(.qd-start-play-btn:active) { transform: translateY(1px); }
 
   /* ── FEEDBACK OVERLAY ── */
   :global(.qd-feedback-overlay) {
     position: absolute; inset: 0;
-    background: rgba(40,49,67,.5);
+    background: rgba(40,49,67,.55); /* PRIMARY.950 */
     backdrop-filter: blur(4px);
     display: flex; align-items: center; justify-content: center;
     z-index: 20; padding: 20px;
@@ -584,8 +774,8 @@ const questions = [
     box-shadow: 0 20px 60px rgba(0,0,0,.25);
     animation: qdSlideUp .25s ease;
   }
-  :global(.qd-feedback-correct) { background: #D4EDDA; }
-  :global(.qd-feedback-wrong)   { background: #F8D7DA; }
+  :global(.qd-feedback-correct) { background: #F5F8F7; } /* SECONDARY.50 — fondo claro neutro para correcto */
+  :global(.qd-feedback-wrong)   { background: #F3F8FB; } /* PRIMARY.50 — fondo claro neutro para incorrecto */
   @keyframes qdSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
   :global(.qd-feedback-lottie) {
@@ -594,28 +784,30 @@ const questions = [
   }
 
   :global(.qd-feedback-title) {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font);
     font-size: 20px; font-weight: 800;
-    color: #283143;
+    color: #283143; /* PRIMARY.950 */
   }
   :global(.qd-feedback-explanation) {
-    font-size: 12px; color: #587472; line-height: 1.6;
+    font-size: 12px; color: #587472; line-height: 1.6; /* SECONDARY.500 */
     text-align: center;
   }
   :global(.qd-feedback-btn) {
     width: 100%; padding: 12px;
     border: none; border-radius: 14px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font);
     font-size: 14px; font-weight: 700;
-    cursor: pointer; color: #253556;
+    cursor: pointer;
     transition: transform .15s, box-shadow .15s;
   }
-  :global(.qd-feedback-btn:hover) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); }
-  :global(.qd-btn-correct) { background: #A3CCB0; color: #283143; }
+  :global(.qd-feedback-btn:hover) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.15); }
+  :global(.qd-btn-correct) {
+    background: #A3CCB0; /* ANSWER.1 / MODAL.1 */
+    color: #283143; /* PRIMARY.950 */
+  }
   :global(.qd-btn-wrong) {
-    background: #F28B82;
-    border: 1.5px solid #F28B82 !important;
-    color: #253556;
+    background: #F28B82; /* ANSWER.0 */
+    color: #283143; /* PRIMARY.950 */
   }
 
   /* ── RESULT ── */
@@ -624,14 +816,14 @@ const questions = [
     padding: 0 16px; gap: 14px;
   }
   :global(.qd-result-title) {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 22px; font-weight: 800; color: #283143;
+    font-family: var(--font);
+    font-size: 22px; font-weight: 800; color: #283143; /* PRIMARY.950 */
     text-align: center; line-height: 1.25;
     margin: 0;
   }
   :global(.qd-result-card) {
     width: 100%;
-    background: rgba(110,150,195,.15);
+    background: rgba(110,150,195,.15); /* PRIMARY.500 tint */
     border-radius: 18px;
     padding: 18px 16px;
     display: flex; flex-direction: column; align-items: center; gap: 10px;
@@ -640,38 +832,46 @@ const questions = [
     display: flex; flex-direction: column; align-items: center; gap: 2px;
   }
   :global(.qd-result-stat-label) {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px; font-weight: 700; color: #283143;
+    font-family: var(--font);
+    font-size: 13px; font-weight: 700; color: #587472; /* SECONDARY.500 */
   }
   :global(.qd-result-stat-value) {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 20px; font-weight: 800; color: #283143;
+    font-family: var(--font);
+    font-size: 20px; font-weight: 800; color: #283143; /* PRIMARY.950 */
   }
   :global(.qd-result-btns) {
     display: flex; gap: 10px; margin-top: 4px; width: 100%;
   }
   :global(.qd-result-retry) {
     flex: 1;
-    background: #fff; border: 1.5px solid rgba(110,150,195,.3);
-    color: #283143; border-radius: 12px;
+    background: #F3F8FB; border: 1.5px solid rgba(110,150,195,.35); /* PRIMARY.50 — base claro */
+    color: #506EA5; border-radius: 12px; /* PRIMARY.700 */
     padding: 9px 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font);
     font-size: 12px; font-weight: 700;
-    cursor: pointer; transition: border-color .2s, background .2s;
+    cursor: pointer; transition: border-color .2s, background .2s, color .2s;
   }
-  :global(.qd-result-retry:hover) { border-color: #6E96C3; background: rgba(110,150,195,.08); }
+  :global(.qd-result-retry:hover) {
+    background: #6E96C3; /* PRIMARY.500 — hover oscuro */
+    border-color: #6E96C3;
+    color: #283143; /* PRIMARY.950 */
+  }
   :global(.qd-result-subjects) {
     flex: 1;
-    background: #fff; border: 1.5px solid rgba(110,150,195,.3);
-    color: #283143; border-radius: 12px;
+    background: #F3F8FB; border: 1.5px solid rgba(110,150,195,.35); /* PRIMARY.50 — base claro */
+    color: #506EA5; border-radius: 12px; /* PRIMARY.700 */
     padding: 9px 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font);
     font-size: 12px; font-weight: 700;
     cursor: pointer; text-decoration: none;
     display: flex; align-items: center; justify-content: center;
-    transition: border-color .2s, background .2s;
+    transition: border-color .2s, background .2s, color .2s;
   }
-  :global(.qd-result-subjects:hover) { border-color: #6E96C3; background: rgba(110,150,195,.08); }
+  :global(.qd-result-subjects:hover) {
+    background: #6E96C3; /* PRIMARY.500 — hover oscuro */
+    border-color: #6E96C3;
+    color: #283143; /* PRIMARY.950 */
+  }
 
   :global(.qd-result-bg) {
     position: absolute;

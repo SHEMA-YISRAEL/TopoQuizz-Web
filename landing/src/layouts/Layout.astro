@@ -67,6 +67,7 @@ const jsonLd = {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content={Astro.generator} />
+  <meta name="theme-color" content="#f6efe6" />
 
   <!-- Primary -->
   <title>{title}</title>
@@ -99,10 +100,23 @@ const jsonLd = {
   <!-- Structured Data -->
   <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Fonts (Quicksand variable, carga local) -->
+  <link
+    rel="preload"
+    href={`${import.meta.env.BASE_URL}assets/fonts/Quicksand-VariableFont_wght.ttf`}
+    as="font"
+    type="font/ttf"
+    crossorigin
+  />
+  <style is:inline set:html={`
+    @font-face {
+      font-family: 'Quicksand';
+      src: url('${import.meta.env.BASE_URL}assets/fonts/Quicksand-VariableFont_wght.ttf') format('truetype');
+      font-weight: 300 700;
+      font-style: normal;
+      font-display: swap;
+    }
+  `} />
 </head>
 <body>
   <slot />
