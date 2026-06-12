@@ -1,0 +1,227 @@
+---
+// ⚠️ TODO — PRUEBA SOCIAL CON DATOS PLACEHOLDER
+// Nada de esto es real todavía. ANTES DE PUBLICAR, reemplazá con:
+//  - rating/descargas reales de Google Play
+//  - universidades que de verdad la usan
+//  - 2-3 testimonios reales (de usuarios, redes o WhatsApp, con permiso)
+// Si al lanzar no hay datos reales, OCULTAR esta sección en index.astro.
+
+// TODO: reemplazar con rating/descargas reales de Google Play.
+const showRealData = false; // poné true solo cuando tengas datos reales
+
+// TODO: reemplazar con universidades reales que usen la app.
+const universities: string[] = []; // ej: ["UMSS", "UMSA", "UMRPSFXCH"]
+
+// TODO: reemplazar con testimonios reales.
+const testimonials: { quote: string; name: string; detail: string }[] = [];
+---
+
+<section class="social" id="opiniones">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-badge green">Comunidad</span>
+      <h2>Estudiantes que ya están practicando</h2>
+      {showRealData
+        ? <p>Sumate a quienes preparan sus exámenes con TopoQuizz.</p>
+        : <p class="social-pending">Estamos recopilando las primeras reseñas. Muy pronto verás aquí lo que dicen los estudiantes.</p>
+      }
+    </div>
+
+    {universities.length > 0 && (
+      <div class="social-unis">
+        <span class="social-unis-label">Usada por estudiantes de</span>
+        <div class="social-unis-row">
+          {universities.map(u => <span class="social-uni-chip">{u}</span>)}
+        </div>
+      </div>
+    )}
+
+    {testimonials.length > 0 ? (
+      <div class="social-grid">
+        {testimonials.map(t => (
+          <figure class="social-card">
+            <div class="social-stars" aria-label="5 de 5 estrellas">
+              {[0,1,2,3,4].map(() => (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+              ))}
+            </div>
+            <blockquote>{t.quote}</blockquote>
+            <figcaption>
+              <strong>{t.name}</strong>
+              <span>{t.detail}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    ) : (
+      <div class="social-empty">
+        <div class="social-empty-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <p>Sé el primero en opinar. Tu reseña ayuda a otros estudiantes a encontrar la mejor forma de estudiar medicina.</p>
+        <div class="social-empty-btns">
+          <a href="https://www.instagram.com/topoquizz" target="_blank" rel="noopener noreferrer" class="btn-energy">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            Instagram
+          </a>
+          <a href="https://www.tiktok.com/@topoquizz" target="_blank" rel="noopener noreferrer" class="btn-energy">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            TikTok
+          </a>
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .social {
+    padding: 96px 0;
+    background: var(--cream);
+  }
+  .social-pending {
+    color: var(--teal) !important;
+    opacity: 0.85;
+  }
+
+  /* Universidades */
+  .social-unis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+  .social-unis-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--teal);
+  }
+  .social-unis-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  .social-uni-chip {
+    background: var(--white);
+    border: 1px solid var(--bone);
+    color: var(--navy);
+    padding: 8px 18px;
+    border-radius: 24px;
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  /* Testimonios */
+  .social-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .social-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--white);
+    border: 1px solid var(--bone);
+    border-radius: 22px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: var(--shadow-lift);
+    margin: 0;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+  .social-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, transparent 50%, var(--glow-green-soft) 50%);
+    pointer-events: none;
+  }
+  .social-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--energy);
+    box-shadow: 0 16px 40px rgba(40, 49, 67, 0.1), 0 0 24px var(--glow-green);
+  }
+  .social-stars {
+    color: var(--yellow-dark);
+    display: flex;
+    gap: 2px;
+  }
+  .social-card blockquote {
+    font-family: var(--font);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--navy);
+    margin: 0;
+  }
+  .social-card figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: auto;
+  }
+  .social-card figcaption strong {
+    font-size: 14px;
+    color: var(--navy);
+  }
+  .social-card figcaption span {
+    font-size: 13px;
+    color: var(--teal);
+  }
+
+  /* Estado vacío (sin testimonios reales aún) */
+  .social-empty {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--white);
+    border: 1px dashed var(--bone);
+    border-radius: 24px;
+    padding: 40px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .social-empty-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: rgba(110, 150, 195, 0.2);
+    color: var(--energy-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 0 rgba(110, 150, 195, 0.25);
+  }
+  .social-empty p {
+    color: var(--teal);
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media (max-width: 1024px) {
+    .social-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    .social {
+      padding: 64px 0;
+    }
+    .social-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

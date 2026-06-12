@@ -1,9 +1,8 @@
 ---
 interface Props {
-  appStoreUrl: string;
   playStoreUrl: string;
 }
-const { appStoreUrl, playStoreUrl } = Astro.props;
+const { playStoreUrl } = Astro.props;
 ---
 
 <footer class="footer">
@@ -25,8 +24,8 @@ const { appStoreUrl, playStoreUrl } = Astro.props;
       </div>
       <div class="footer-col">
         <strong>DESCARGA</strong>
-        <a href={appStoreUrl}>App Store</a>
-        <a href={playStoreUrl}>Google Play</a>
+        <span class="footer-soon">App Store · Muy pronto</span>
+        <a href={playStoreUrl} target="_blank" rel="noopener noreferrer">Google Play</a>
       </div>
       <div class="footer-col">
         <strong>CONTACTO</strong>

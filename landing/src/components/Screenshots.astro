@@ -1,15 +1,30 @@
 ---
 const base = import.meta.env.BASE_URL;
 const screenshots = [
-  { src: `${base}screenshots/init.png`, alt: 'Pantalla inicial' },
-  { src: `${base}screenshots/courses.png`, alt: 'materias' },
-  { src: `${base}screenshots/quizz.png`, alt: 'Quiz' },
-  { src: `${base}screenshots/completedQuizz.png`, alt: 'Quiz completado' },
-  { src: `${base}screenshots/init2.png`, alt: 'Inicio alternativo' },
-  { src: `${base}screenshots/lesson.png`, alt: 'Lección' },
-  { src: `${base}screenshots/respuestaCorrecta.png`, alt: 'Respuesta correcta' },
-  { src: `${base}screenshots/respuestaIncorrecta.png`, alt: 'Respuesta incorrecta' },
-  { src: `${base}screenshots/explicacionProgreso.png`, alt: 'Progreso' },
+  {
+    src: `${base}screenshots/courses.png`,
+    alt: 'Pantalla de materias de TopoQuizz',
+    title: 'Elegí tu materia',
+    note: 'Anatomía y Farmacología, con más materias en camino.',
+  },
+  {
+    src: `${base}screenshots/quizz.png`,
+    alt: 'Pregunta de quiz con cronómetro',
+    title: 'Practicá con cronómetro',
+    note: 'Simulá las condiciones reales del examen.',
+  },
+  {
+    src: `${base}screenshots/respuestaCorrecta.png`,
+    alt: 'Explicación tras responder',
+    title: 'Aprendé de cada respuesta',
+    note: 'Cada pregunta trae su explicación detallada.',
+  },
+  {
+    src: `${base}screenshots/explicacionProgreso.png`,
+    alt: 'Pantalla de progreso por tema',
+    title: 'Seguí tu progreso',
+    note: 'Mirá tu avance por tema e identificá tus puntos débiles.',
+  },
 ];
 ---
 
@@ -18,25 +33,89 @@ const screenshots = [
     <div class="sec-head">
       <span class="sec-badge dark">La App en Acción</span>
       <h2 class="white">Diseñada para la eficiencia</h2>
-      <p class="muted">Interfaz limpia e intuitiva. Enfócate en aprender, no en buscar cómo usar la app.</p>
+      <p class="muted">Interfaz limpia e intuitiva. Enfocate en aprender, no en buscar cómo usar la app.</p>
     </div>
-    <div class="carousel">
-      <div class="carousel-track">
-        <div class="track-set">
-          {screenshots.map(s => (
-            <div class="phone-frame">
-              <img src={s.src} alt={s.alt} class="frame-img" />
-            </div>
-          ))}
-        </div>
-        <div class="track-set" aria-hidden="true">
-          {screenshots.map(s => (
-            <div class="phone-frame">
-              <img src={s.src} alt="" class="frame-img" />
-            </div>
-          ))}
-        </div>
-      </div>
+    <div class="ss-grid">
+      {screenshots.map(s => (
+        <figure class="ss-item">
+          <div class="phone-frame">
+            <img src={s.src} alt={s.alt} class="frame-img" loading="lazy" />
+          </div>
+          <figcaption class="ss-cap">
+            <strong>{s.title}</strong>
+            <span>{s.note}</span>
+          </figcaption>
+        </figure>
+      ))}
     </div>
   </div>
 </section>
+
+<style>
+  .ss-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    justify-items: center;
+  }
+  .ss-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin: 0;
+    max-width: 210px;
+    width: 100%;
+  }
+  .ss-item .phone-frame {
+    width: 100%;
+    /* Aspecto real de las capturas (430×932) → sin recorte */
+    aspect-ratio: 430 / 932;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .ss-item:hover .phone-frame {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35), 0 0 30px rgba(110, 150, 195, 0.4);
+  }
+  .ss-item .frame-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 32px;
+    object-fit: contain;
+  }
+  .ss-cap {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .ss-cap strong {
+    font-family: var(--font);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .ss-cap span {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--blue-light);
+    opacity: 0.85;
+  }
+
+  @media (max-width: 1024px) {
+    .ss-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px 28px;
+    }
+  }
+  @media (max-width: 768px) {
+    .ss-grid {
+      grid-template-columns: 1fr;
+      gap: 44px;
+    }
+    .ss-item {
+      max-width: 240px;
+    }
+  }
+</style>

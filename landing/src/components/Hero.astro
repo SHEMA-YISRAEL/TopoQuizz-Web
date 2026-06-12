@@ -1,33 +1,91 @@
 ---
 interface Props {
-  appStoreUrl: string;
   playStoreUrl: string;
 }
-const { appStoreUrl, playStoreUrl } = Astro.props;
+const { playStoreUrl } = Astro.props;
+
+const questions = [
+  {
+    specialty: "Anatomía",
+    difficulty: "Difícil",
+    question: "¿Qué síndrome se presenta por interrupción de la vía simpática cervical y se caracteriza por la presencia de ptosis, miosis y anhidrosis ipsolateral?",
+    options: ["Síndrome de Horner", "Síndrome de Brown-Séquard", "Síndrome Piramidal", "Síndrome Cerebeloso"],
+    correct: 0,
+    explanation: "El síndrome de Horner produce ptosis, miosis y anhidrosis ipsolateral."
+  },
+  {
+    specialty: "Farmacología",
+    difficulty: "Difícil",
+    question: "¿Qué afirmación describe mejor la distribución trifásica de un fármaco en un modelo de tres compartimentos?",
+    options: [
+      "El fármaco alcanza primero el compartimento profundo",
+      "La fase beta corresponde al equilibrio entre eliminación y redistribución",
+      "La fase gamma corresponde a acumulación en tejidos con cinética rápida",
+      "La concentración inicial refleja equilibrio inmediato entre compartimentos"
+    ],
+    correct: 1,
+    explanation: "Los modelos compartimentales permiten describir matemáticamente cómo un fármaco se distribuye y elimina, facilitando la predicción de concentraciones, el cálculo de dosis y el ajuste terapéutico."
+  },
+  {
+    specialty: "Farmacología",
+    difficulty: "Medio",
+    question: "¿Qué define principalmente la velocidad con la que un fármaco desaparece del plasma en cinética de primer orden?",
+    options: [
+      "La saturación de los transportadores",
+      "La cantidad fija eliminada por unidad de tiempo",
+      "La proporcionalidad entre concentración plasmática y eliminación",
+      "La presencia de metabolitos activos"
+    ],
+    correct: 2,
+    explanation: "En cinética de primer orden, la eliminación es proporcional a la concentración: a mayor concentración, mayor velocidad de eliminación. Esto genera una vida media constante y predecible."
+  },
+  {
+    specialty: "Anatomía",
+    difficulty: "Medio",
+    question: "En la posición anatómica estándar, ¿cómo se encuentran las palmas de las manos?",
+    options: [
+      "Mirando hacia abajo (pronación)",
+      "Con los dedos extendidos hacia atrás",
+      "Con las palmas orientadas hacia adelante y los dedos juntos",
+      "Flexionadas sobre el abdomen"
+    ],
+    correct: 2,
+    explanation: "En la posición anatómica estándar las palmas miran hacia adelante, con los dedos extendidos y el pulgar girado 90°."
+  },
+  {
+    specialty: "Anatomía",
+    difficulty: "Medio",
+    question: "El plano que divide el cuerpo humano en mitades derecha e izquierda se denomina:",
+    options: [
+      "Plano frontal",
+      "Plano sagital medio",
+      "Plano transversal",
+      "Plano coronal"
+    ],
+    correct: 1,
+    explanation: "El plano sagital medio divide el cuerpo en mitades derecha e izquierda."
+  }
+];
 ---
 
-<section class="hero">
+<section class="hero" id="demo">
   <div class="hero-inner">
     <div class="hero-left">
-      <div class="mascot-lottie" id="mascot-lottie"></div>
-      <div class="badge beta-badge">
-        <span class="badge-dot"></span>
-        Disponible en Google Play
+      <div class="hero-mascot">
+        <div class="energy-halo"></div>
+        <div class="mascot-lottie" id="mascot-lottie"></div>
       </div>
-      <h1>Practica Medicina jugando</h1>
+      <h1>Practicá Medicina <span class="hero-accent">jugando</span></h1>
       <p class="hero-sub">
-        Ya disponible en Google Play. Quizzes de <strong>Anatomía</strong> y <strong>Farmacología</strong> — MUY PRONTO MÁS MATERIAS.
+        Respondé tu primera pregunta <strong>ahora mismo</strong> — sin registrarte, sin descargar nada. Quizzes reales de <strong>Anatomía</strong> y <strong>Farmacología</strong>.
       </p>
-      <div class="store-buttons">
-        <a href={appStoreUrl} class="store-btn white soon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-          <div>
-            <small>Próximamente en</small>
-            <strong>App Store</strong>
-          </div>
+      <div class="hero-cta-row">
+        <a href={playStoreUrl} class="btn-energy">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Descargá la app gratis
         </a>
-        <a href={playStoreUrl} class="store-btn gplay" target="_blank" rel="noopener noreferrer">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 511.999 511.999" aria-hidden="true">
+        <a href={playStoreUrl} class="hero-store-link" target="_blank" rel="noopener noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 511.999 511.999" aria-hidden="true">
             <path d="M382.369,175.623C322.891,142.356,227.427,88.937,79.355,6.028C69.372-0.565,57.886-1.429,47.962,1.93l254.05,254.05L382.369,175.623z" fill="#32BBFF"/>
             <path d="M47.962,1.93c-1.86,0.63-3.67,1.39-5.401,2.308C31.602,10.166,23.549,21.573,23.549,36v439.96c0,14.427,8.052,25.834,19.012,31.761c1.728,0.917,3.537,1.68,5.395,2.314L302.012,255.98L47.962,1.93z" fill="#32BBFF"/>
             <path d="M302.012,255.98L47.956,510.035c9.927,3.384,21.413,2.586,31.399-4.103c143.598-80.41,237.986-133.196,298.152-166.746c1.675-0.941,3.316-1.861,4.938-2.772L302.012,255.98z" fill="#32BBFF"/>
@@ -35,17 +93,18 @@ const { appStoreUrl, playStoreUrl } = Astro.props;
             <path d="M298.158,252.126L42.561,507.721c10.96,5.815,24.939,6.151,36.794-1.789c143.598-80.41,237.986-133.196,298.152-166.746c1.675-0.941,3.316-1.861,4.938-2.772L298.158,252.126z" fill="#D93F21"/>
             <path d="M488.45,255.98c0-12.19-6.151-24.492-18.342-31.314c0,0-22.799-12.721-92.682-51.809l-83.123,83.123l83.204,83.205c69.116-38.807,92.6-51.892,92.6-51.892C482.299,280.472,488.45,268.17,488.45,255.98z" fill="#FFD500"/>
           </svg>
-          <div>
-            <small>Disponible en</small>
-            <strong>Google Play</strong>
-          </div>
+          Disponible en Google Play
         </a>
       </div>
+      <span class="ios-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        iOS · Muy pronto
+      </span>
     </div>
+
     <div class="hero-right">
-      <div class="phone-mockup">
-        <div class="phone-notch"></div>
-        <img src={`${import.meta.env.BASE_URL}screenshots/init.png`} alt="TopoQuizz pantalla inicial" class="phone-img" />
+      <div class="qd-phone">
+        <div class="qd-screen" id="quiz-root" data-questions={JSON.stringify(questions)} data-base={import.meta.env.BASE_URL}></div>
       </div>
     </div>
   </div>
@@ -61,4 +120,774 @@ const { appStoreUrl, playStoreUrl } = Astro.props;
     autoplay: true,
     path: `${import.meta.env.BASE_URL}HomeMole.json`,
   });
+
+  const TIMER_MAX = 15;
+  const CIRC = 2 * Math.PI * 22; // r=22
+
+  interface Question {
+    specialty: string;
+    difficulty: string;
+    question: string;
+    options: string[];
+    correct: number;
+    explanation: string;
+  }
+
+  const root = document.getElementById('quiz-root') as HTMLElement;
+  const questions: Question[] = JSON.parse(root.dataset.questions!);
+
+  let current = 0;
+  let score = 0;
+  let timeLeft = TIMER_MAX;
+  let totalTimeUsed = 0;
+  let timerInterval: ReturnType<typeof setInterval> | null = null;
+  let answered = false;
+  let shuffledOptions: string[] = [];
+  let shuffledCorrect = 0;
+
+  function shuffle<T>(arr: T[]): T[] {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function prepareQuestion() {
+    const q = questions[current];
+    const indexed = q.options.map((text, i) => ({ text, original: i }));
+    const shuffled = shuffle(indexed);
+    shuffledOptions = shuffled.map(o => o.text);
+    shuffledCorrect = shuffled.findIndex(o => o.original === q.correct);
+  }
+
+  // COLORS.DIFFICULTY: 1=fácil #A3CCB0, 2=medio #FFF2A5, 3=difícil #F28B82
+  function diffColor(d: string) {
+    if (d === 'Difícil') return '#F28B82';
+    if (d === 'Medio') return '#FFF2A5';
+    return '#A3CCB0';
+  }
+
+  // COLORS.DIFFICULTY_TEXT: 1=#F3F8FB, 2=#455C5A, 3=#F3F8FB
+  function diffTextColor(d: string) {
+    if (d === 'Medio') return '#455C5A';
+    return '#F3F8FB';
+  }
+
+  // COLORS.TIMER: ok=#A3CCB0, warn=#D1BF5B, danger=#F28B82
+  function timerColor(t: number) {
+    if (t > TIMER_MAX * 0.5) return '#A3CCB0';
+    if (t > TIMER_MAX * 0.25) return '#D1BF5B';
+    return '#F28B82';
+  }
+
+  function pad(n: number) { return String(n).padStart(2, '0'); }
+
+  function updateTimer() {
+    const circle = root.querySelector<SVGCircleElement>('.qd-timer-ring');
+    const label = root.querySelector<HTMLElement>('.qd-timer-label');
+    if (!circle || !label) return;
+    const offset = ((TIMER_MAX - timeLeft) / TIMER_MAX) * CIRC;
+    circle.style.strokeDashoffset = String(offset);
+    circle.style.stroke = timerColor(timeLeft);
+    label.textContent = `00:${pad(timeLeft)}`;
+    label.style.color = timerColor(timeLeft);
+  }
+
+  function formatTime(seconds: number): string {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${pad(m)}:${pad(s)}`;
+  }
+
+  function startTimer() {
+    stopTimer();
+    timeLeft = TIMER_MAX;
+    updateTimer();
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      totalTimeUsed++;
+      updateTimer();
+      if (timeLeft <= 0) {
+        stopTimer();
+        if (!answered) showTimeout();
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  function renderQuestion() {
+    answered = false;
+    prepareQuestion();
+    const q = questions[current];
+    const progress = ((current) / questions.length) * 100;
+
+    root.innerHTML = `
+      <div class="qd-statusbar">
+        <span>9:41</span>
+        <div class="qd-statusbar-icons">
+          <svg width="15" height="10" viewBox="0 0 15 10"><rect x="0" y="4" width="3" height="6" rx="1" fill="#283143"/><rect x="4" y="2" width="3" height="8" rx="1" fill="#283143"/><rect x="8" y="0" width="3" height="10" rx="1" fill="#283143"/><rect x="12" y="0" width="3" height="10" rx="1" fill="#28314355"/></svg>
+          <svg width="16" height="12" viewBox="0 0 20 16"><path d="M10 3C6.5 3 3.5 4.5 1.5 7L0 5.5C2.5 2.5 6 1 10 1s7.5 1.5 10 4.5L18.5 7C16.5 4.5 13.5 3 10 3z" fill="#283143"/><path d="M10 7c-2 0-3.8.8-5 2l-1.5-1.5C5 5.8 7.4 5 10 5s5 .8 6.5 2.5L15 9c-1.2-1.2-3-2-5-2z" fill="#283143"/><path d="M10 11c-1 0-1.9.4-2.5 1L10 15l2.5-3c-.6-.6-1.5-1-2.5-1z" fill="#283143"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="3" stroke="#283143" stroke-width="1.5" fill="none"/><rect x="1.5" y="2.5" width="15" height="7" rx="2" fill="#283143"/><rect x="22" y="3.5" width="2.5" height="5" rx="1" fill="#283143"/></svg>
+        </div>
+      </div>
+
+      <div class="qd-topbar">
+        <button class="qd-abandon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Abandonar
+        </button>
+      </div>
+
+      <div class="qd-timer-wrap">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="22" fill="none" stroke="#E8EEF4" stroke-width="4"/>
+          <circle class="qd-timer-ring" cx="28" cy="28" r="22" fill="none"
+            stroke="#A3CCB0" stroke-width="4"
+            stroke-dasharray="${CIRC}"
+            stroke-dashoffset="0"
+            stroke-linecap="round"
+            transform="rotate(-90 28 28)"/>
+        </svg>
+        <span class="qd-timer-label">00:${pad(TIMER_MAX)}</span>
+      </div>
+
+      <div class="qd-question-card">
+        <div class="qd-q-header">
+          <span class="qd-specialty">${q.specialty}</span>
+        </div>
+        <p class="qd-q-text">${q.question}</p>
+        <div class="qd-q-footer">
+          <span class="qd-difficulty" style="background:${diffColor(q.difficulty)};color:${diffTextColor(q.difficulty)}">${q.difficulty}</span>
+        </div>
+      </div>
+
+      <div class="qd-progress-row">
+        <span class="qd-progress-label">Pregunta ${current + 1}</span>
+        <span class="qd-progress-label">${current + 1} de ${questions.length}</span>
+      </div>
+      <div class="qd-progress-bar"><div class="qd-progress-fill" style="width:${progress}%"></div></div>
+
+      <div class="qd-options">
+        ${shuffledOptions.map((opt, i) => `
+          <button class="qd-option" data-index="${i}">
+            <span class="qd-option-text">${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="qd-homeind"></div>
+    `;
+
+    root.querySelectorAll<HTMLButtonElement>('.qd-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (answered) return;
+        showFeedback(Number(btn.dataset.index));
+      });
+    });
+
+    root.querySelector<HTMLButtonElement>('.qd-abandon')?.addEventListener('click', () => {
+      stopTimer();
+      renderStart();
+    });
+
+    startTimer();
+  }
+
+  function showTimeout() {
+    answered = true;
+    // Resaltar la respuesta correcta sin avanzar
+    root.querySelectorAll<HTMLButtonElement>('.qd-option').forEach(btn => {
+      const idx = Number(btn.dataset.index);
+      if (idx === shuffledCorrect) btn.classList.add('qd-option-correct');
+    });
+    // Mostrar banner de tiempo agotado encima de las opciones
+    const banner = document.createElement('div');
+    banner.className = 'qd-timeout-banner';
+    banner.innerHTML = `
+      <span class="qd-timeout-text">⏰ Tiempo agotado</span>
+      <button class="qd-timeout-btn">Continuar</button>
+    `;
+    root.querySelector('.qd-options')?.after(banner);
+    banner.querySelector('.qd-timeout-btn')?.addEventListener('click', () => {
+      current++;
+      if (current >= questions.length) renderResult();
+      else renderQuestion();
+    });
+  }
+
+  function showFeedback(selected: number) {
+    answered = true;
+    stopTimer();
+    const q = questions[current];
+    const isCorrect = selected === shuffledCorrect;
+
+    if (isCorrect) score++;
+
+    // Style options
+    root.querySelectorAll<HTMLButtonElement>('.qd-option').forEach(btn => {
+      const idx = Number(btn.dataset.index);
+      if (idx === shuffledCorrect) {
+        btn.classList.add('qd-option-correct');
+      } else if (idx === selected && !isCorrect) {
+        btn.classList.add('qd-option-wrong');
+      }
+    });
+
+    // Build overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'qd-feedback-overlay';
+    overlay.innerHTML = `
+      <div class="qd-feedback-card ${isCorrect ? 'qd-feedback-correct' : 'qd-feedback-wrong'}">
+        <div id="feedback-lottie" class="qd-feedback-lottie"></div>
+        <h3 class="qd-feedback-title">${isCorrect ? '¡Correcto!' : 'Incorrecto'}</h3>
+        <p class="qd-feedback-explanation">${q.explanation}</p>
+        <button class="qd-feedback-btn ${isCorrect ? 'qd-btn-correct' : 'qd-btn-wrong'}">
+          Continuar
+        </button>
+      </div>
+    `;
+
+    root.querySelector('.qd-options')?.after(overlay);
+
+    lottie.loadAnimation({
+      container: overlay.querySelector('#feedback-lottie') as HTMLElement,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: isCorrect ? `${import.meta.env.BASE_URL}assets/Correct.json` : `${import.meta.env.BASE_URL}assets/Incorrect.json`,
+    });
+
+    overlay.querySelector('.qd-feedback-btn')?.addEventListener('click', () => {
+      current++;
+      if (current >= questions.length) {
+        renderResult();
+      } else {
+        renderQuestion();
+      }
+    });
+  }
+
+  function renderResult() {
+    stopTimer();
+
+    root.innerHTML = `
+      <div class="qd-result-bg">
+        <div id="confetti-lottie" class="qd-confetti-lottie"></div>
+        <div id="podium-lottie" class="qd-podium-lottie"></div>
+      </div>
+
+      <div class="qd-statusbar qd-rel">
+        <span>9:41</span>
+        <div class="qd-statusbar-icons">
+          <svg width="15" height="10" viewBox="0 0 15 10"><rect x="0" y="4" width="3" height="6" rx="1" fill="#283143"/><rect x="4" y="2" width="3" height="8" rx="1" fill="#283143"/><rect x="8" y="0" width="3" height="10" rx="1" fill="#283143"/><rect x="12" y="0" width="3" height="10" rx="1" fill="#28314355"/></svg>
+          <svg width="16" height="12" viewBox="0 0 20 16"><path d="M10 3C6.5 3 3.5 4.5 1.5 7L0 5.5C2.5 2.5 6 1 10 1s7.5 1.5 10 4.5L18.5 7C16.5 4.5 13.5 3 10 3z" fill="#283143"/><path d="M10 7c-2 0-3.8.8-5 2l-1.5-1.5C5 5.8 7.4 5 10 5s5 .8 6.5 2.5L15 9c-1.2-1.2-3-2-5-2z" fill="#283143"/><path d="M10 11c-1 0-1.9.4-2.5 1L10 15l2.5-3c-.6-.6-1.5-1-2.5-1z" fill="#283143"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="3" stroke="#283143" stroke-width="1.5" fill="none"/><rect x="1.5" y="2.5" width="15" height="7" rx="2" fill="#283143"/><rect x="22" y="3.5" width="2.5" height="5" rx="1" fill="#283143"/></svg>
+        </div>
+      </div>
+
+      <div class="qd-result-top qd-rel">
+        <h2 class="qd-result-title">Cuestionario<br>Completado</h2>
+
+        <div class="qd-result-card">
+          <div class="qd-result-stat">
+            <span class="qd-result-stat-label">Tu puntuación:</span>
+            <span class="qd-result-stat-value">${score}/${questions.length}</span>
+          </div>
+          <div class="qd-result-stat">
+            <span class="qd-result-stat-label">Tiempo total:</span>
+            <span class="qd-result-stat-value">${formatTime(totalTimeUsed)}</span>
+          </div>
+          <div class="qd-result-btns">
+            <button class="qd-result-retry">Reiniciar</button>
+            <a href="#descargar" class="qd-result-subjects">Ir a materias</a>
+          </div>
+        </div>
+      </div>
+    `;
+
+    lottie.loadAnimation({
+      container: root.querySelector('#confetti-lottie') as HTMLElement,
+      renderer: 'svg', loop: false, autoplay: true,
+      path: `${import.meta.env.BASE_URL}assets/Confetti.json`,
+    });
+
+    lottie.loadAnimation({
+      container: root.querySelector('#podium-lottie') as HTMLElement,
+      renderer: 'svg', loop: false, autoplay: true,
+      path: `${import.meta.env.BASE_URL}assets/Podium.json`,
+    });
+
+    root.querySelector('.qd-result-retry')?.addEventListener('click', () => {
+      renderStart();
+    });
+  }
+
+  function renderStart() {
+    stopTimer();
+    current = 0;
+    score = 0;
+    totalTimeUsed = 0;
+
+    const BASE = root.dataset.base ?? '';
+
+    root.innerHTML = `
+      <img src="${BASE}screenshots/init2.png" alt="" class="qd-start-bg" aria-hidden="true" />
+      <div class="qd-start-overlay"></div>
+      <div class="qd-start-spacer"></div>
+
+      <div class="qd-start-card qd-start-z">
+        <div class="qd-start-card-left">
+          <p class="qd-start-quote">"Hoy puedes descubrir algo que no sabías ayer"</p>
+          <button class="qd-start-play-btn">
+            Jugar
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+        </div>
+        <div class="qd-start-trophy">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F28B82" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4a2 2 0 0 1-2-2V5h4"/><path d="M18 9h2a2 2 0 0 0 2-2V5h-4"/><path d="M12 17v4"/><path d="M8 21h8"/><path d="M6 3h12v6a6 6 0 0 1-12 0V3z"/></svg>
+        </div>
+      </div>
+
+      <div class="qd-homeind qd-start-z"></div>
+    `;
+
+    root.querySelector('.qd-start-play-btn')?.addEventListener('click', () => {
+      renderQuestion();
+    });
+  }
+
+  renderStart();
 </script>
+
+<style>
+  /* ── HERO QUIZ PHONE ── */
+  .qd-phone {
+    width: 300px;
+    border-radius: 44px;
+    background: #0a0e1a;
+    padding: 14px;
+    position: relative;
+    box-shadow: none;
+  }
+
+  /* Notch */
+  .qd-phone::before {
+    content: '';
+    position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+    width: 92px; height: 26px;
+    background: #0a0e1a;
+    border-radius: 0 0 16px 16px;
+    z-index: 10;
+  }
+
+  /* Home indicator */
+  .qd-phone::after {
+    content: '';
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 4px;
+    background: rgba(255,255,255,.28);
+    border-radius: 3px;
+    z-index: 10;
+  }
+
+  .qd-screen {
+    background: #FDF8F3;
+    border-radius: 32px;
+    overflow: hidden;
+    height: 580px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── QUIZ INTERNALS ── */
+  /* COLORS ref: PRIMARY.950=#283143, PRIMARY.500=#6E96C3, PRIMARY.700=#506EA5
+                 SECONDARY.500=#587472, SECONDARY.700=#3A4B4A
+                 ANSWER.0=#F28B82(wrong), ANSWER.1=#A3CCB0(correct)
+                 BACKGROUND.50=#FDF8F3, TIMER.ok=#A3CCB0, TIMER.warn=#D1BF5B, TIMER.danger=#F28B82 */
+
+  :global(.qd-statusbar) {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 20px 4px;
+    font-size: 12px; font-weight: 700;
+    color: #283143; /* PRIMARY.950 */
+  }
+  :global(.qd-statusbar-icons) { display: flex; align-items: center; gap: 6px; }
+
+  :global(.qd-topbar) {
+    padding: 4px 16px 0;
+  }
+  :global(.qd-abandon) {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(110,150,195,.12); color: #506EA5; /* PRIMARY.700 */
+    border: none; border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: background .15s, color .15s;
+  }
+  :global(.qd-abandon:hover) {
+    background: #6E96C3; /* PRIMARY.500 */
+    color: #283143; /* PRIMARY.950 */
+  }
+
+  :global(.qd-timer-wrap) {
+    display: flex; justify-content: center; align-items: center;
+    position: relative; height: 60px; margin-top: 4px;
+  }
+  :global(.qd-timer-ring) {
+    transition: stroke-dashoffset .9s linear, stroke .5s;
+  }
+  :global(.qd-timer-label) {
+    position: absolute;
+    font-family: var(--font);
+    font-size: 12px; font-weight: 800;
+    color: #A3CCB0; /* TIMER.ok */
+    transition: color .5s;
+  }
+
+  :global(.qd-question-card) {
+    margin: 0 12px;
+    background: rgba(110,150,195,.18); /* PRIMARY.500 tint */
+    border-radius: 18px;
+    padding: 14px;
+    flex-shrink: 0;
+  }
+  :global(.qd-q-header) {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  :global(.qd-specialty) {
+    font-size: 10px; font-weight: 700; color: #587472; /* SECONDARY.500 */
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  :global(.qd-report) {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(255,255,255,.5); border: none; border-radius: 20px;
+    padding: 3px 8px; font-size: 10px; color: #587472; /* SECONDARY.500 */
+    cursor: pointer; font-family: var(--font);
+  }
+  :global(.qd-q-text) {
+    font-family: var(--font);
+    font-size: 13px; font-weight: 600;
+    color: #283143; line-height: 1.5; /* PRIMARY.950 */
+    text-align: center; margin-bottom: 10px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+  }
+  :global(.qd-q-footer) { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+  :global(.qd-difficulty) {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 10px; border-radius: 20px;
+  }
+  :global(.qd-progress-row) {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: #587472; /* SECONDARY.500 */
+    margin: 8px 12px 4px;
+  }
+  :global(.qd-progress-bar) {
+    height: 4px; background: #D0E0ED; border-radius: 4px; overflow: hidden; /* PRIMARY.200 */
+    margin: 0 12px;
+  }
+  :global(.qd-progress-fill) {
+    height: 100%; background: #6E96C3; border-radius: 4px; /* PRIMARY.500 */
+    transition: width .4s ease;
+  }
+
+  :global(.qd-options) {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 12px 12px 24px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  :global(.qd-option) {
+    display: flex; align-items: center; gap: 10px;
+    background: #F3F8FB; /* PRIMARY.50 — base claro */
+    border: 1.5px solid rgba(110,150,195,.3);
+    border-radius: 14px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, color .15s, transform .1s;
+    text-align: center;
+    justify-content: center;
+    font-family: var(--font);
+  }
+  :global(.qd-option:hover:not(:disabled)) {
+    background: #6E96C3; /* PRIMARY.500 — hover oscuro */
+    border-color: #6E96C3;
+    transform: translateY(-1px);
+  }
+  :global(.qd-option:hover:not(:disabled) .qd-option-text) {
+    color: #283143; /* PRIMARY.950 — texto oscuro sobre fondo azul */
+  }
+  :global(.qd-option-text) {
+    font-size: 12px; color: #506EA5; font-weight: 500; line-height: 1.4; /* PRIMARY.700 */
+  }
+  :global(.qd-option-correct) {
+    background: rgba(163,204,176,.2) !important; /* ANSWER.1 tint */
+    border-color: #A3CCB0 !important; /* ANSWER.1 */
+  }
+  :global(.qd-option-correct .qd-option-text) { color: #3A4B4A; font-weight: 600; } /* SECONDARY.700 */
+  :global(.qd-option-wrong) {
+    background: rgba(242,139,130,.12) !important; /* ANSWER.0 tint */
+    border-color: #F28B82 !important; /* ANSWER.0 */
+  }
+  :global(.qd-option-wrong .qd-option-text) { color: #F28B82; font-weight: 600; } /* ANSWER.0 */
+
+  :global(.qd-homeind) { height: 24px; }
+
+  /* ── TIMEOUT BANNER ── */
+  :global(.qd-timeout-banner) {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(242,139,130,.15); /* ANSWER.0 tint */
+    border: 1.5px solid #F28B82; /* ANSWER.0 */
+    border-radius: 14px;
+    margin: 0 12px 12px;
+    padding: 10px 14px;
+    animation: qdFadeIn .2s ease;
+    flex-shrink: 0;
+  }
+  :global(.qd-timeout-text) {
+    font-family: var(--font);
+    font-size: 12px; font-weight: 700; color: #F28B82; /* ANSWER.0 */
+  }
+  :global(.qd-timeout-btn) {
+    background: #F28B82; border: none; border-radius: 10px; /* ANSWER.0 */
+    padding: 6px 14px;
+    font-family: var(--font);
+    font-size: 12px; font-weight: 700; color: #283143; /* PRIMARY.950 */
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  :global(.qd-timeout-btn:hover) { transform: translateY(-1px); }
+
+  /* ── START SCREEN ── */
+
+  /* Imagen cubre toda la pantalla del teléfono */
+  :global(.qd-start-bg) {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center top;
+    display: block;
+    border-radius: 32px;
+  }
+
+  /* Degradado de blur progresivo: transparent arriba → frost abajo */
+  :global(.qd-start-overlay) {
+    position: absolute; inset: 0;
+    border-radius: 32px;
+    z-index: 1;
+    /* Fondo en degradado: solo la parte baja se opacifica */
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 45%,
+      rgba(243,248,251,.5) 62%,
+      rgba(243,248,251,.88) 78%,
+      rgba(243,248,251,.96) 100%
+    );
+  }
+  /* Pseudoelemento con blur que también se desvanece usando máscara */
+  :global(.qd-start-overlay::after) {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 32px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 40%, black 72%);
+    mask-image: linear-gradient(to bottom, transparent 40%, black 72%);
+  }
+
+  /* Todos los elementos de UI van sobre el overlay */
+  :global(.qd-start-z) { position: relative; z-index: 2; }
+
+  /* Empuja el card hasta el fondo */
+  :global(.qd-start-spacer) {
+    flex: 1;
+    position: relative; z-index: 2;
+  }
+
+  /* Card inferior */
+  :global(.qd-start-card) {
+    margin: 0 12px 4px;
+    background: transparent;
+    border: none;
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  :global(.qd-start-card-left) {
+    flex: 1; display: flex; flex-direction: column; gap: 10px;
+  }
+  :global(.qd-start-quote) {
+    font-family: var(--font);
+    font-size: 12px; font-weight: 600; color: #283143; /* PRIMARY.950 */
+    line-height: 1.55; margin: 0;
+  }
+  :global(.qd-start-trophy) { flex-shrink: 0; }
+
+  /* Botón Jugar — base claro, hover oscuro */
+  :global(.qd-start-play-btn) {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #E5ECF4; /* PRIMARY.100 — base claro */
+    color: #506EA5;      /* PRIMARY.700 */
+    border: 1.5px solid rgba(110,150,195,.4);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-family: var(--font);
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    width: fit-content;
+    transition: background .15s, color .15s, border-color .15s, transform .12s;
+  }
+  :global(.qd-start-play-btn:hover) {
+    background: #283143; /* PRIMARY.950 — hover oscuro */
+    color: #D0E0ED;      /* PRIMARY.200 */
+    border-color: #283143;
+    transform: translateY(-1px);
+  }
+  :global(.qd-start-play-btn:active) { transform: translateY(1px); }
+
+  /* ── FEEDBACK OVERLAY ── */
+  :global(.qd-feedback-overlay) {
+    position: absolute; inset: 0;
+    background: rgba(40,49,67,.55); /* PRIMARY.950 */
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 20; padding: 20px;
+    animation: qdFadeIn .2s ease;
+  }
+  @keyframes qdFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  :global(.qd-feedback-card) {
+    border-radius: 24px;
+    padding: 24px 20px;
+    width: 100%;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    animation: qdSlideUp .25s ease;
+  }
+  :global(.qd-feedback-correct) { background: #F5F8F7; } /* SECONDARY.50 — fondo claro neutro para correcto */
+  :global(.qd-feedback-wrong)   { background: #F3F8FB; } /* PRIMARY.50 — fondo claro neutro para incorrecto */
+  @keyframes qdSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  :global(.qd-feedback-lottie) {
+    width: 110px;
+    height: 110px;
+  }
+
+  :global(.qd-feedback-title) {
+    font-family: var(--font);
+    font-size: 20px; font-weight: 800;
+    color: #283143; /* PRIMARY.950 */
+  }
+  :global(.qd-feedback-explanation) {
+    font-size: 12px; color: #587472; line-height: 1.6; /* SECONDARY.500 */
+    text-align: center;
+  }
+  :global(.qd-feedback-btn) {
+    width: 100%; padding: 12px;
+    border: none; border-radius: 14px;
+    font-family: var(--font);
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+  }
+  :global(.qd-feedback-btn:hover) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.15); }
+  :global(.qd-btn-correct) {
+    background: #A3CCB0; /* ANSWER.1 / MODAL.1 */
+    color: #283143; /* PRIMARY.950 */
+  }
+  :global(.qd-btn-wrong) {
+    background: #F28B82; /* ANSWER.0 */
+    color: #283143; /* PRIMARY.950 */
+  }
+
+  /* ── RESULT ── */
+  :global(.qd-result-top) {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 0 16px; gap: 14px;
+  }
+  :global(.qd-result-title) {
+    font-family: var(--font);
+    font-size: 22px; font-weight: 800; color: #283143; /* PRIMARY.950 */
+    text-align: center; line-height: 1.25;
+    margin: 0;
+  }
+  :global(.qd-result-card) {
+    width: 100%;
+    background: rgba(110,150,195,.15); /* PRIMARY.500 tint */
+    border-radius: 18px;
+    padding: 18px 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  :global(.qd-result-stat) {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  :global(.qd-result-stat-label) {
+    font-family: var(--font);
+    font-size: 13px; font-weight: 700; color: #587472; /* SECONDARY.500 */
+  }
+  :global(.qd-result-stat-value) {
+    font-family: var(--font);
+    font-size: 20px; font-weight: 800; color: #283143; /* PRIMARY.950 */
+  }
+  :global(.qd-result-btns) {
+    display: flex; gap: 10px; margin-top: 4px; width: 100%;
+  }
+  :global(.qd-result-retry) {
+    flex: 1;
+    background: #F3F8FB; border: 1.5px solid rgba(110,150,195,.35); /* PRIMARY.50 — base claro */
+    color: #506EA5; border-radius: 12px; /* PRIMARY.700 */
+    padding: 9px 0;
+    font-family: var(--font);
+    font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: border-color .2s, background .2s, color .2s;
+  }
+  :global(.qd-result-retry:hover) {
+    background: #6E96C3; /* PRIMARY.500 — hover oscuro */
+    border-color: #6E96C3;
+    color: #283143; /* PRIMARY.950 */
+  }
+  :global(.qd-result-subjects) {
+    flex: 1;
+    background: #F3F8FB; border: 1.5px solid rgba(110,150,195,.35); /* PRIMARY.50 — base claro */
+    color: #506EA5; border-radius: 12px; /* PRIMARY.700 */
+    padding: 9px 0;
+    font-family: var(--font);
+    font-size: 12px; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .2s, background .2s, color .2s;
+  }
+  :global(.qd-result-subjects:hover) {
+    background: #6E96C3; /* PRIMARY.500 — hover oscuro */
+    border-color: #6E96C3;
+    color: #283143; /* PRIMARY.950 */
+  }
+
+  :global(.qd-result-bg) {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  :global(.qd-confetti-lottie) {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+  }
+  :global(.qd-podium-lottie) {
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 260px; height: 200px;
+  }
+  :global(.qd-rel) { position: relative; z-index: 1; }
+</style>
