@@ -211,6 +211,10 @@ body {
   font-size: 14px;
   text-decoration: none;
   box-shadow: 0 4px 0 #A8C6DD;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
   transition: transform 0.12s, box-shadow 0.12s, background 0.2s, color 0.2s;
 }
 .btn-cta:hover {
@@ -223,6 +227,7 @@ body {
   transform: translateY(2px);
   box-shadow: 0 2px 0 #3B4D6D;
 }
+.btn-cta-icon { display: none; }
 
 /* ── HERO ── */
 .hero {
@@ -1072,6 +1077,9 @@ body {
   .header-inner {
     padding: 0 40px;
   }
+  /* Tablet: nav gap más compacto */
+  .nav { gap: 20px; }
+  .btn-cta { padding: 9px 18px; font-size: 13px; }
   .hero-inner {
     padding: 60px 40px;
     gap: 40px;
@@ -1119,10 +1127,19 @@ body {
 @media (max-width: 768px) {
   .header-inner {
     padding: 0 20px;
+    height: 60px;
   }
   .nav {
     display: none;
   }
+  /* Mobile: botón compacto con texto visible */
+  .btn-cta {
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    box-shadow: 0 3px 0 #A8C6DD;
+  }
+  .btn-cta-label { display: inline; }
   .hero-inner {
     padding: 48px 20px;
     gap: 32px;
