@@ -1,0 +1,63 @@
+---
+import HeaderAllMyLinks from '../components/HeaderAllMyLinks.astro'
+import ButtonRRSS from '../components/ButtonRRSS.astro'
+import AppStoreIcon from '../components/icons/AppStoreIcon.astro'
+import PlayStoreIcon from '../components/icons/PlayStoreIcon.astro'
+import InternetIcon from '../components/icons/InternetIcon.astro'
+import TiktokIcon from '../components/icons/TiktokIcon.astro'
+import FacebookIcon from '../components/icons/FacebookIcon.astro'
+import InstagramIcon from '../components/icons/InstagramIcon.astro'
+import YoutubeIcon from '../components/icons/YoutubeIcon.astro'
+---
+
+<section class="relative flex min-h-screen flex-col items-center justify-center gap-8 px-4 pt-12 sm:pt-16 bg-[url('/assets/TopoQuizz_Background.webp')] bg-[length:100%_100%] bg-center bg-no-repeat">
+  <HeaderAllMyLinks />
+  <div id="confetti2-lottie" class="pointer-events-none absolute inset-0 z-0 scale-90 opacity-50"></div>
+  <div class="relative z-10 flex w-full max-w-[480px] flex-col items-center gap-3">
+    <ButtonRRSS text='App Store' url={import.meta.env.PUBLIC_APP_STORE_URL}>
+      <AppStoreIcon slot="icon" size={32} />
+    </ButtonRRSS>
+    <ButtonRRSS text='Play Store' url={import.meta.env.PUBLIC_PLAY_STORE_URL}>
+      <PlayStoreIcon slot="icon" size={32} />
+    </ButtonRRSS>
+    <ButtonRRSS text='Página Web' url={import.meta.env.PUBLIC_WEB_URL}>
+      <InternetIcon slot="icon" size={32} color='#141B34' />
+    </ButtonRRSS>
+    <ButtonRRSS text='Tiktok' url={import.meta.env.PUBLIC_TIKTOK_URL}>
+      <TiktokIcon slot="icon" size={32} color='#141B34' />
+    </ButtonRRSS>
+    <ButtonRRSS text='Facebook' url={import.meta.env.PUBLIC_FACEBOOK_URL}>
+      <FacebookIcon slot="icon" size={32} color='#2563EB' />
+    </ButtonRRSS>
+    <ButtonRRSS text='Instagram' url={import.meta.env.PUBLIC_INSTAGRAM_URL}>
+      <InstagramIcon slot="icon" size={32} color='#DB2777' />
+    </ButtonRRSS>
+    <ButtonRRSS text='Youtube' url={import.meta.env.PUBLIC_YOUTUBE_URL}>
+      <YoutubeIcon slot="icon" size={32} color='#DC2727' />
+    </ButtonRRSS>
+  </div>
+  <div id="onboarding3-lottie" class="w-[min(400px,70vw)] h-[min(400px,70vw)] -mt-20"></div>
+</section>
+
+<script>
+  import lottie from 'lottie-web';
+
+  lottie.loadAnimation({
+    container: document.getElementById('onboarding3-lottie') as HTMLElement,
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: `${import.meta.env.BASE_URL}assets/Onboarding3.json`,
+  });
+
+  lottie.loadAnimation({
+    container: document.getElementById('confetti2-lottie') as HTMLElement,
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: `${import.meta.env.BASE_URL}assets/Confetti2.json`,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid meet',
+    },
+  });
+</script>
