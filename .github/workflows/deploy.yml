@@ -33,6 +33,14 @@ jobs:
       - name: Build
         working-directory: landing
         run: npm run build
+        env:
+          PUBLIC_APP_STORE_URL: ${{ vars.PUBLIC_APP_STORE_URL }}
+          PUBLIC_PLAY_STORE_URL: ${{ vars.PUBLIC_PLAY_STORE_URL }}
+          PUBLIC_WEB_URL: ${{ vars.PUBLIC_WEB_URL }}
+          PUBLIC_TIKTOK_URL: ${{ vars.PUBLIC_TIKTOK_URL }}
+          PUBLIC_FACEBOOK_URL: ${{ vars.PUBLIC_FACEBOOK_URL }}
+          PUBLIC_INSTAGRAM_URL: ${{ vars.PUBLIC_INSTAGRAM_URL }}
+          PUBLIC_YOUTUBE_URL: ${{ vars.PUBLIC_YOUTUBE_URL }}
 
       - uses: actions/upload-pages-artifact@v3
         with:
